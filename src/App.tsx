@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { activities, days, event, type Activity } from "./data";
 import "./App.css";
+import { Hero } from "./Hero";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
@@ -55,6 +56,7 @@ function App() {
   const [now, setNow] = useState(clock);
   const [shareMessage, setShareMessage] = useState("");
   const main = useRef<HTMLElement>(null);
+  const revealedContent = useRef<WeakSet<Element>>(new WeakSet());
   const [origin, setOrigin] = useState("/programacao");
   const lastRoute = useRef(route);
   const originFocus = useRef<string | null>(null);
@@ -93,6 +95,52 @@ function App() {
       window.scrollTo(0, 0);
       main.current?.focus({ preventScroll: true });
     }
+  }, [route]);
+  useEffect(() => {
+    const content = main.current;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!content || reducedMotion.matches || !("IntersectionObserver" in window)) return;
+
+    const elements = Array.from(content.querySelectorAll<HTMLElement>(
+      ".programme > .section-heading, .programme .agenda-sidebar, .programme .agenda-list, .about-intro, .information > section, .detail-layout > *, .missing",
+    ));
+    document.querySelectorAll<HTMLElement>(".site-footer > div, .site-footer > .text-link").forEach((element) => elements.push(element));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const element = entry.target as HTMLElement;
+        element.dataset.scrollReveal = "visible";
+        revealedContent.current.add(element);
+        observer.unobserve(element);
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -7% 0px" });
+    const revealAll = () => {
+      observer.disconnect();
+      elements.forEach((element) => {
+        element.dataset.scrollReveal = "visible";
+        revealedContent.current.add(element);
+      });
+    };
+
+    elements.forEach((element, index) => {
+      if (revealedContent.current.has(element)) {
+        element.dataset.scrollReveal = "visible";
+        return;
+      }
+      element.style.setProperty("--scroll-reveal-delay", `${Math.min(index, 3) * 55}ms`);
+      element.dataset.scrollReveal = "pending";
+      observer.observe(element);
+    });
+    reducedMotion.addEventListener("change", revealAll);
+
+    return () => {
+      observer.disconnect();
+      reducedMotion.removeEventListener("change", revealAll);
+      elements.forEach((element) => {
+        element.dataset.scrollReveal = "visible";
+        element.style.removeProperty("--scroll-reveal-delay");
+      });
+    };
   }, [route]);
   const isActivities = route === "/atividades",
     isAbout = route === "/sobre",
@@ -224,7 +272,6 @@ function App() {
               width="1673"
               height="940"
             />
-            <small>XXI · 2026</small>
           </a>
           <button
             className="menu-button"
@@ -260,116 +307,28 @@ function App() {
       </header>
       <main id="conteudo" tabIndex={-1} ref={main}>
         {!isDetail && valid && (
-          <section
-            className={`hero ${event.phase === "live" && !isAbout ? "hero-live" : ""}`}
-          >
-            <div className="hero-copy">
-              <h1>
-                {isAbout ? (
-                  <>
-                    Uma semana.
-                    <br />
-                    Muitas conexões.
-                  </>
-                ) : isActivities ? (
-                  <>
-                    Encontre a sua
-                    <br />
-                    <em>próxima descoberta.</em>
-                  </>
-                ) : event.phase === "live" ? (
-                  <>
-                    A SEMINFO
-                    <br />
-                    <em>acontece agora.</em>
-                  </>
-                ) : event.phase === "finished" ? (
-                  <>
-                    Encontros que
-                    <br />
-                    <em>ficam com você.</em>
-                  </>
-                ) : (
-                  <>
-                    Informática.
-                    <br />
-                    <em>Encontros reais.</em>
-                  </>
-                )}
-              </h1>
-              <p>
-                {isAbout
-                  ? "A Semana da Informática do IFSULDEMINAS, Campus Muzambinho. Um espaço para aprender, trocar experiências e conhecer novas possibilidades."
-                  : "Quatro dias de palestras, oficinas e experiências. Escolha suas atividades e faça parte da XXI SEMINFO."}
-              </p>
-              <div className="hero-links">
-                <a
-                  className="button"
-                  href={
-                    isAbout || event.phase !== "registration"
-                      ? "#/programacao"
-                      : "#/atividades"
-                  }
-                  onClick={(e) => {
-                    clear();
-                    if (!isAbout && event.phase === "registration")
-                      setOpenOnly(true);
-                    else if (route === "/programacao") {
-                      e.preventDefault();
-                      document
-                        .getElementById("list-heading")
-                        ?.scrollIntoView({
-                          behavior: window.matchMedia(
-                            "(prefers-reduced-motion: reduce)",
-                          ).matches
-                            ? "auto"
-                            : "smooth",
-                        });
-                    }
-                  }}
-                >
-                  {isAbout || event.phase !== "registration"
-                    ? "Consultar programação"
-                    : "Explorar inscrições"}
-                </a>
-                <a
-                  className="text-link"
-                  href={isAbout ? "#/atividades" : "#/sobre"}
-                >
-                  {isAbout ? "Conhecer atividades" : "Conheça a SEMINFO"}
-                </a>
-              </div>
-            </div>
-            <div className="event-stamp">
-              <img
-                className="hero-logo"
-                src={seminfoLogo}
-                alt="XXI SEMINFO"
-                width="1673"
-                height="940"
-                fetchPriority="high"
-              />
-              <div className="stamp-bottom">
-                <strong>
-                  26 a 29
-                  <br />
-                  outubro 2026
-                </strong>
-                <span>
-                  Campus Muzambinho
-                  <br />
-                  Evento gratuito
-                </span>
-              </div>
-            </div>
-          </section>
-        )}
-        {event.demo && (
-          <div className="demo-notice">
-            <strong>Programação demonstrativa.</strong> As atividades são
-            fictícias e os formulários ainda não estão disponíveis. Datas e
-            identidade correspondem à edição de 2026.
-          </div>
+          <Hero
+            key={route}
+            isAbout={isAbout}
+            isActivities={isActivities}
+            onPrimary={(e) => {
+              clear();
+              if (isActivities && event.phase === "registration") {
+                e.preventDefault();
+                setOpenOnly(true);
+                document.getElementById("list-heading")?.scrollIntoView({
+                  behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+                  block: "start",
+                });
+              } else if (route === "/programacao") {
+                e.preventDefault();
+                document.querySelector(".programme")?.scrollIntoView({
+                  behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+                  block: "start",
+                });
+              }
+            }}
+          />
         )}
         {!valid || (isDetail && !detail) ? (
           <section className="content missing">
