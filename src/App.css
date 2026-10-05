@@ -61,10 +61,10 @@ main:focus { outline: none; }
 .header-date { color: var(--cyan); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
 .menu-button { display: none; }
 
-.hero { max-width: 1440px; min-height: 520px; margin: auto; padding: 76px 48px 66px; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: center; position: relative; isolation: isolate; overflow: hidden; }
+.hero { max-width: 1440px; min-height: 560px; margin: auto; padding: 88px 48px 78px; display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 76px; align-items: center; position: relative; isolation: isolate; overflow: hidden; }
 .hero::before { content: ""; position: absolute; z-index: -1; inset: 0 0 0 38%; background: url("./assets/Apresentação Oficial XXI SEMINFO 2026_compressed-1.png") right center / auto 430% no-repeat; opacity: .34; mask-image: linear-gradient(to right, transparent, #000 27%, #000 90%, transparent); }
 .hero::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, var(--ink) 0%, rgba(5,11,36,.92) 30%, transparent 76%), linear-gradient(0deg, var(--ink), transparent 20%, transparent 82%, var(--ink)); pointer-events: none; }
-.hero-copy { position: relative; max-width: 610px; }
+.hero-copy { position: relative; max-width: 570px; padding-left: 10px; }
 .hero-copy::before { content: "XXI SEMINFO  /  2026"; display: block; margin-bottom: 26px; color: var(--pink); font-size: 11px; font-weight: 700; letter-spacing: .16em; }
 .hero h1 { font-size: clamp(44px, 5.4vw, 78px); line-height: .99; letter-spacing: -.055em; font-weight: 700; }
 .hero h1 em { display: inline-block; color: var(--cyan); font-style: normal; text-decoration: underline; text-decoration-color: var(--pink); text-decoration-thickness: 3px; text-underline-offset: 12px; }
@@ -202,16 +202,16 @@ main:focus { outline: none; }
   .header-inner nav { display: none; width: 100%; margin: 0; gap: 8px 22px; flex-wrap: wrap; }
   .header-inner nav.is-open { display: flex; }
   .header-inner nav a { min-height: 44px; padding: 12px 0; }
-  .hero { min-height: 0; grid-template-columns: 1fr; gap: 32px; padding: 42px 20px 48px; }
-  .hero::before { inset: 38% 0 0; background-size: auto 430%; opacity: .2; mask-image: linear-gradient(to right, transparent, #000 45%, transparent); }
-  .hero::after { background: linear-gradient(0deg, var(--ink) 0%, transparent 30%, rgba(5,11,36,.82) 100%); }
+  .hero { min-height: 0; grid-template-columns: 1fr; gap: 42px; padding: 48px 20px 54px; }
+  .hero::before { inset: 42% -18% 0; background-size: auto 300%; opacity: .24; mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 78%, transparent); }
+  .hero::after { background: linear-gradient(180deg, var(--ink) 0%, rgba(5,11,36,.72) 46%, var(--ink) 100%); }
   .hero-copy::before { margin-bottom: 20px; font-size: 10px; }
   .hero h1 { font-size: clamp(43px, 12vw, 58px); }
   .hero-copy > p { margin-top: 24px; font-size: 15px; }
   .hero-links { gap: 18px; margin-top: 27px; }
   .event-stamp { padding: 0; }
-  .hero-logo { width: min(100%, 390px); margin: -28px auto -18px; }
-  .stamp-bottom { margin: 0; padding-top: 19px; }
+  .hero-logo { width: min(100%, 350px); margin: -8px auto 0; }
+  .stamp-bottom { margin: 0; padding-top: 22px; }
   .stamp-bottom strong { font-size: 19px; }
   .stamp-bottom > span { font-size: 12px; }
   .demo-notice { margin: 0 20px 38px; padding: 13px 14px; font-size: 11px; }
