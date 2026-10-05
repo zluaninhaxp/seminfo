@@ -1,6 +1,9 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { activities, days, event, type Activity } from "./data";
 import "./App.css";
+import seminfoLogo from "./assets/LogoSEMINFO.png";
+import instituteLogo from "./assets/LogoIF.png";
+import academicCenterLogo from "./assets/LogoCA2.png";
 
 const labels = {
   open: "Inscrições abertas",
@@ -214,7 +217,13 @@ function App() {
             href="#/programacao"
             aria-label="SEMINFO, programação"
           >
-            <span>SEMINFO</span>
+            <img
+              className="header-logo"
+              src={seminfoLogo}
+              alt="SEMINFO"
+              width="1673"
+              height="940"
+            />
             <small>XXI · 2026</small>
           </a>
           <button
@@ -332,8 +341,14 @@ function App() {
               </div>
             </div>
             <div className="event-stamp">
-              <span className="edition">XXI</span>
-              <span className="stamp-name">SEMINFO</span>
+              <img
+                className="hero-logo"
+                src={seminfoLogo}
+                alt="XXI SEMINFO"
+                width="1673"
+                height="940"
+                fetchPriority="high"
+              />
               <div className="stamp-bottom">
                 <strong>
                   26 a 29
@@ -719,7 +734,14 @@ function App() {
       <footer className="site-footer">
         <div>
           <a className="footer-brand" href="#/programacao">
-            SEMINFO
+            <img
+              className="footer-logo"
+              src={seminfoLogo}
+              alt="SEMINFO"
+              width="1673"
+              height="940"
+              loading="lazy"
+            />
           </a>
           <p>
             XXI Semana da Informática
@@ -729,6 +751,22 @@ function App() {
         </div>
         <div>
           <strong>Realização e organização</strong>
+          <div className="institutional-logos">
+            <img
+              src={instituteLogo}
+              alt="Instituto Federal do Sul de Minas Gerais, Campus Muzambinho"
+              width="2172"
+              height="724"
+              loading="lazy"
+            />
+            <img
+              src={academicCenterLogo}
+              alt="Centro Acadêmico Alan Turing"
+              width="1859"
+              height="325"
+              loading="lazy"
+            />
+          </div>
           <p>
             IFSULDEMINAS · Campus Muzambinho
             <br />

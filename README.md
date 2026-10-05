@@ -12,7 +12,7 @@ A fonte compartilhada é `src/data.ts`. `days` contém os quatro dias e `activit
 
 O conteúdo inicial é **demonstrativo**: títulos, responsáveis, locais, horários, requisitos e situações de inscrição são fictícios. Antes de publicar, a comissão deve substituir os exemplos pela programação aprovada e mudar `event.demo` para `false`. As datas gerais do evento são confirmadas.
 
-A marca tipográfica da interface é temporária. Os logos enviados na conversa não estão disponíveis como arquivos no projeto; a versão final deve receber os arquivos oficiais, preservando suas proporções. As artes de redes sociais servem como referência de identidade.
+Os arquivos oficiais de marca estão em `src/assets`: `LogoSEMINFO.png`, `LogoIF.png`, `LogoCA1.png` e `LogoCA2.png`. Preserve suas proporções. A arte `Apresentação Oficial XXI SEMINFO 2026_compressed-1.png` orienta a composição expressiva do hero; a programação mantém uma superfície limpa e legível.
 
 `event.phase` controla a prioridade editorial:
 
