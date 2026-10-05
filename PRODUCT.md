@@ -24,11 +24,11 @@ Programação por dia, exploração de atividades, detalhes compartilháveis e i
 
 ## Brand Commitments
 
-Preservar identidade da edição: azul profundo e elétrico, magenta, ciano e marca branca geométrica. Materiais sociais são referências de identidade, não layouts a reproduzir. Usuário rejeitou branco predominante, aparência de aplicativo mobile e circuitos. Agentes têm liberdade de composição e devem preservar clareza da agenda.
+Preservar identidade da edição: azul profundo e elétrico, magenta, ciano e marca branca geométrica oficial. Materiais sociais orientam a linguagem gráfica, sem transformar a interface em pôster. Usuário rejeitou branco predominante e aparência de aplicativo mobile. Na refatoração visual, autorizou poucos grafismos de linhas/cabos, pontos e scanlines muito sutis, principalmente no hero; evitar decoração tecnológica genérica, excesso de neon e textura atrás da programação. Preservar textos, ordem das seções, lógica React, links e comportamento responsivo existente.
 
 ## Evidence on Hand
 
-Cartaz confirmado pelo usuário: datas, campus e gratuidade. Artes e logos vistos na conversa, mas arquivos originais não disponíveis no workspace. Programação, formulários, links online, contatos, requisitos e regras de certificados ainda não fornecidos. Dados demonstrativos devem ser explicitamente identificados.
+Cartaz confirmado pelo usuário: datas, campus e gratuidade. Arquivos oficiais disponíveis em `src/assets`: `LogoSEMINFO.png`, `LogoIF.png`, `LogoCA1.png`, `LogoCA2.png` e `Apresentação Oficial XXI SEMINFO 2026_compressed-1.png`. A arte oficial é uma composição gráfica azul/magenta, não uma fotografia separada. Programação, formulários, links online, contatos, requisitos e regras de certificados ainda não fornecidos. Dados demonstrativos devem ser explicitamente identificados.
 
 ## Product Principles
 

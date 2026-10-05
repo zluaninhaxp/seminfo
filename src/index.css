@@ -1,4 +1,4 @@
-﻿@font-face {
+@font-face {
   font-family: "SEMINFO Sans";
   src: url("/fonts/space-grotesk.ttf") format("truetype");
   font-weight: 300 700;
@@ -12,19 +12,26 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  color: #f4f6ff;
-  background: #071337;
+  color: var(--text);
+  background: var(--ink);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
-  --ink: #071337;
-  --surface: #0c1c47;
-  --line: #32436c;
-  --muted: #bac8e9;
-  --cyan: #75e8f7;
-  --pink: #f993d5;
-  --electric: #254bf1;
+  --ink: #030d2c;
+  --surface: #09193d;
+  --surface-raised: #0e2047;
+  --line: #27395e;
+  --line-strong: #56698e;
+  --text: #f5f7ff;
+  --muted: #b8c7e5;
+  --cyan: #50e5f5;
+  --pink: #f591d3;
+  --electric: #2348ef;
+  --electric-hover: #3459ff;
+  --radius: 5px;
+  --transition: 180ms cubic-bezier(.16, 1, .3, 1);
+  --space-page: 48px;
   --display: "SEMINFO Sans", sans-serif;
 }
 * {
@@ -78,14 +85,14 @@ select:focus-visible {
   outline-offset: 5px;
 }
 ::selection {
-  color: #071337;
-  background: #75e8f7;
+  color: var(--ink);
+  background: var(--cyan);
 }
 input {
   caret-color: var(--cyan);
 }
 :root {
-  scrollbar-color: #596da1 #071337;
+  scrollbar-color: var(--line-strong) var(--ink);
 }
 main:focus {
   outline: none;

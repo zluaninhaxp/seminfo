@@ -1,13 +1,13 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-05T11:29:22.4397536-03:00",
+  "generatedAt": "2026-10-05T15:03:28.501Z",
   "title": "Design System: SEMINFO",
   "extensions": {
     "motion": [
       {
-        "name": "button-state",
-        "value": "background 0.18s, transform 0.18s",
-        "purpose": "Transição do botão principal; easing padrão CSS ease."
+        "name": "state-transition",
+        "value": "180ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Transições sutis de cores, bordas, estados dos controles e indicador da navegação."
       },
       {
         "name": "button-active",
@@ -18,22 +18,39 @@
         "name": "reduced-motion",
         "value": "scroll-behavior: auto; animation: none; transition: none",
         "purpose": "Aplicado com prefers-reduced-motion: reduce."
+      },
+      {
+        "name": "nav-indicator",
+        "value": "scaleX(0) to scaleX(1)",
+        "purpose": "Linha curta cresce da esquerda no hover e na página atual."
       }
     ],
     "breakpoints": [
-      { "name": "compact-desktop", "value": "1100px" },
-      { "name": "mobile", "value": "760px" },
-      { "name": "stack-stamp", "value": "420px" },
-      { "name": "narrow-mobile", "value": "380px" }
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "stack-stamp",
+        "value": "420px"
+      },
+      {
+        "name": "narrow-mobile",
+        "value": "380px"
+      }
     ]
   },
   "narrative": {
-    "overview": "Website responsivo com azul profundo dominante, campos de azul elétrico, acentos ciano e magenta e Space Grotesk hospedada localmente. Tipografia e divisórias organizam a agenda por linhas. A marca textual SEMINFO é temporária enquanto os arquivos originais não estão disponíveis.",
+    "overview": "Website responsivo da XXI SEMINFO com marcas oficiais, arte gráfica integrada à hero por máscara e fade, base azul profunda e Space Grotesk hospedada localmente. Direção aproximada de 80% interface funcional e 20% expressão visual; agenda com linhas, divisórias e leitura limpa.",
     "keyCharacteristics": [
-      "Azul profundo como fundo dominante",
-      "Agenda por horários, linhas e divisórias",
-      "Superfícies planas sem sombras",
-      "Composição própria para desktop e celular"
+      "Marcas oficiais SEMINFO, IF e CA2",
+      "Hero expressiva com arte gráfica integrada ao fundo",
+      "Agenda por horários, linhas e divisórias sem neon",
+      "Superfícies tonais planas e composição responsiva preservada"
     ],
     "rules": [
       {
@@ -43,14 +60,15 @@
       }
     ],
     "dos": [
-      "Preservar a identidade cromática da edição.",
+      "Usar arquivos oficiais como fonte de verdade visual.",
+      "Concentrar expressão visual na hero; grafismos discretos da arte oficial são permitidos.",
       "Manter horário, local, estado textual e foco de teclado legíveis.",
       "Usar Space Grotesk hospedada localmente."
     ],
     "donts": [
-      "Introduzir circuitos ou branco predominante.",
-      "Converter o website em uma interface de aplicativo mobile.",
-      "Apresentar a marca textual temporária como arquivo oficial."
+      "Usar branco predominante ou aparência de aplicativo mobile.",
+      "Aplicar textura, glow ou cartões neon à programação.",
+      "Recriar logos oficiais com texto, CSS ou formas aproximadas."
     ]
   }
 }
