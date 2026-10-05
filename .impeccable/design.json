@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T11:29:22.4397536-03:00",
+  "title": "Design System: SEMINFO",
+  "extensions": {
+    "motion": [
+      {
+        "name": "button-state",
+        "value": "background 0.18s, transform 0.18s",
+        "purpose": "Transição do botão principal; easing padrão CSS ease."
+      },
+      {
+        "name": "button-active",
+        "value": "translateY(1px)",
+        "purpose": "Resposta de pressão do botão principal."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "scroll-behavior: auto; animation: none; transition: none",
+        "purpose": "Aplicado com prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact-desktop", "value": "1100px" },
+      { "name": "mobile", "value": "760px" },
+      { "name": "stack-stamp", "value": "420px" },
+      { "name": "narrow-mobile", "value": "380px" }
+    ]
+  },
+  "narrative": {
+    "overview": "Website responsivo com azul profundo dominante, campos de azul elétrico, acentos ciano e magenta e Space Grotesk hospedada localmente. Tipografia e divisórias organizam a agenda por linhas. A marca textual SEMINFO é temporária enquanto os arquivos originais não estão disponíveis.",
+    "keyCharacteristics": [
+      "Azul profundo como fundo dominante",
+      "Agenda por horários, linhas e divisórias",
+      "Superfícies planas sem sombras",
+      "Composição própria para desktop e celular"
+    ],
+    "rules": [
+      {
+        "name": "Regra do fundo profundo",
+        "body": "Preservar a base escura e o contraste dos controles; branco predominante foi rejeitado pelo usuário.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Preservar a identidade cromática da edição.",
+      "Manter horário, local, estado textual e foco de teclado legíveis.",
+      "Usar Space Grotesk hospedada localmente."
+    ],
+    "donts": [
+      "Introduzir circuitos ou branco predominante.",
+      "Converter o website em uma interface de aplicativo mobile.",
+      "Apresentar a marca textual temporária como arquivo oficial."
+    ]
+  }
+}
