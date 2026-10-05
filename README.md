@@ -4,7 +4,7 @@ Website responsivo da XXI Semana da Informática, de 26 a 29 de outubro de 2026,
 
 ## Desenvolvimento
 
-Execute `npm install` e `npm run dev`. Use `npm run build` para verificar TypeScript e gerar a versão de produção. Consulte `package.json` para os demais comandos.
+Use Node.js 22.12 ou superior. Execute `npm install` e `npm run dev`. Use `npm run build` para verificar TypeScript e gerar a versão de produção. Consulte `package.json` para os demais comandos.
 
 ## Manutenção
 
@@ -21,6 +21,16 @@ Os arquivos oficiais de marca estão em `src/assets`: `LogoSEMINFO.png`, `LogoIF
 - `finished`: programação e informações após o evento.
 
 A configuração é manual. O relógio não confirma inscrições, atrasos ou mudanças operacionais.
+
+## Hero de 2026
+
+`src/Hero.tsx` e `src/Hero.css` implementam a composição aprovada, com “Informática além da aula.” como título e destaque ciano em “além da aula.”. A marca oficial, as ondas vetoriais e a faixa de edição/ano/gratuidade mantêm a identidade da edição, sem carregar o cartaz de 4,5 MB.
+
+A entrada do hero termina em menos de um segundo. Ao rolar, a introdução, a programação, o conteúdo de Sobre, os detalhes e o rodapé entram suavemente na tela uma vez, sem deslocar os dados que o visitante está lendo. O ambiente tem ciclos de 24–30 segundos; cursor e scroll deslocam apenas as camadas decorativas. O cursor funciona somente em desktop com mouse. O movimento pausa fora da tela e em abas ocultas; `prefers-reduced-motion` apresenta a composição estática. Até 760px, a marca do hero fica oculta para manter o fluxo entre título, descrição e CTAs. A programação vem diretamente depois do hero, sem a faixa de aviso demonstrativo.
+
+Na programação, o CTA principal rola até a agenda. Em atividades, “Explorar inscrições” mantém o filtro de inscrições abertas. As demais rotas, filtros e detalhes usam a lógica existente.
+
+Para repetir a verificação no Chrome instalado, disponibilize Playwright fora das dependências do app e execute `node scripts/verify-hero.cjs`. `PLAYWRIGHT_MODULE` aceita o caminho do pacote temporário e `HERO_URL` define a URL local (padrão: `http://127.0.0.1:5174`). O script verifica oito larguras, as outras rotas, cursor, hover, scroll, movimento reduzido, menu, filtros e detalhes; salva as capturas e o relatório em `output/screenshots`.
 
 ## Inscrições e atividades online
 
