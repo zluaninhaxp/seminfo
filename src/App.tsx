@@ -115,11 +115,16 @@ const normalize = (value: string) =>
 
 function App() {
   const [route, setRoute] = useState(readRoute);
-  const [day, setDay] = useState(
-    event.phase === "live" && days.some((d) => d.date === clock().date)
-      ? clock().date
-      : days[0].date,
-  );
+  const [day, setDay] = useState(() => {
+    const onlyActivity = activities.length === 1 ? activities[0] : undefined;
+    if (onlyActivity && days.some((d) => d.date === onlyActivity.date)) {
+      return onlyActivity.date;
+    }
+    const today = clock().date;
+    return event.phase === "live" && days.some((d) => d.date === today)
+      ? today
+      : days[0].date;
+  });
   const [search, setSearch] = useState("");
   const [type, setType] = useState("Todas");
   const [openOnly, setOpenOnly] = useState(false);
@@ -214,7 +219,7 @@ function App() {
     if (!content || reducedMotion.matches || !("IntersectionObserver" in window)) return;
 
     const elements = Array.from(content.querySelectorAll<HTMLElement>(
-      ".programme > .section-heading, .programme .agenda-sidebar, .programme .agenda-list, .about-intro, .information > section, .detail-layout > *, .missing",
+      ".programme > .section-heading, .programme .agenda-sidebar > *, .programme .list-summary, .programme .live-explanation, .programme .empty, .programme .time-group > .group-label, .programme .activity-row, .about-page > .about-section, .detail-page > .back-link, .detail-layout > *, .missing",
     ));
     document.querySelectorAll<HTMLElement>(".site-footer > div, .site-footer > .text-link").forEach((element) => elements.push(element));
     const observer = new IntersectionObserver((entries) => {
@@ -253,7 +258,7 @@ function App() {
         element.style.removeProperty("--scroll-reveal-delay");
       });
     };
-  }, [route]);
+  }, [route, day, search, type, openOnly, showEarlier]);
   const isActivities = route === "/atividades",
     isAbout = route === "/sobre",
     isDetail = route.startsWith("/atividade/");
@@ -673,7 +678,7 @@ function App() {
                       checked={openOnly}
                       onChange={(e) => setOpenOnly(e.target.checked)}
                     />
-                    Somente inscrições abertas
+                    <span>Somente inscrições abertas</span>
                   </label>
                   {(search || type !== "Todas" || openOnly) && (
                     <button className="text-button" onClick={clear}>

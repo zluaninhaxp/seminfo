@@ -1,45 +1,100 @@
-﻿# SEMINFO
+# XXI SEMINFO 2026
 
-Website responsivo da XXI Semana da Informática, de 26 a 29 de outubro de 2026, no IFSULDEMINAS — Campus Muzambinho. Organização: Centro Acadêmico Alan Turing.
+Site oficial da **XXI Semana da Informática (SEMINFO)** do IFSULDEMINAS — Campus Muzambinho. O evento acontece de **26 a 29 de outubro de 2026** e é organizado pelo Centro Acadêmico Alan Turing.
 
-## Desenvolvimento
+O site reúne a programação divulgada, detalhes das atividades e informações sobre o evento. A programação é mantida em um único arquivo de dados para facilitar as atualizações pela organização.
 
-Use Node.js 22.12 ou superior. Execute `npm install` e `npm run dev`. Use `npm run build` para verificar TypeScript e gerar a versão de produção. Consulte `package.json` para os demais comandos.
+## Começar a desenvolver
 
-## Manutenção
+**Requisitos:** Node.js 22.12 ou superior e npm.
 
-A fonte compartilhada é `src/data.ts`. `days` contém os quatro dias e `activities` reúne a programação. Cada atividade começa e termina no mesmo dia. Horários usam `HH:mm`, datas usam `AAAA-MM-DD`; a referência é Brasília (`America/Sao_Paulo`).
+```bash
+npm ci
+npm run dev
+```
 
-O conteúdo inicial é **demonstrativo**: títulos, responsáveis, locais, horários, requisitos e situações de inscrição são fictícios. Antes de publicar, a comissão deve substituir os exemplos pela programação aprovada e mudar `event.demo` para `false`. As datas gerais do evento são confirmadas.
+O Vite informa no terminal o endereço local para abrir no navegador.
 
-Os arquivos oficiais de marca estão em `src/assets`: `LogoSEMINFO.png`, `LogoIF.png`, `LogoCA1.png` e `LogoCA2.png`. Preserve suas proporções. A arte `Apresentação Oficial XXI SEMINFO 2026_compressed-1.png` orienta a composição expressiva do hero; a programação mantém uma superfície limpa e legível.
+### Comandos
 
-`event.phase` controla a prioridade editorial:
+| Comando | Para que serve |
+| --- | --- |
+| `npm run dev` | Inicia o servidor local de desenvolvimento. |
+| `npm run lint` | Verifica problemas no código com Oxlint. |
+| `npm run build` | Verifica os tipos TypeScript e gera a versão de produção em `dist/`. |
+| `npm run preview` | Abre localmente a versão gerada pelo build. |
 
-- `registration`: descoberta e inscrições antes do evento.
-- `live`: consulta da programação durante o evento.
-- `finished`: programação e informações após o evento.
+## Páginas
 
-A configuração é manual. O relógio não confirma inscrições, atrasos ou mudanças operacionais.
+O site usa navegação interna por hash e não depende de um serviço de roteamento externo.
 
-## Hero de 2026
+| Rota | Conteúdo |
+| --- | --- |
+| `#/programacao` | Agenda organizada por dia, com busca e filtros. |
+| `#/atividades` | Lista de atividades e acesso às inscrições disponíveis. |
+| `#/atividade/desafio-programacao` | Detalhes da CSP, regras, horários e formulário. |
+| `#/sobre` | Informações sobre a SEMINFO, patrocinadores e organização. |
 
-`src/Hero.tsx` e `src/Hero.css` implementam a composição aprovada, com “Informática além da aula.” como título e destaque ciano em “além da aula.”. A marca oficial, as ondas vetoriais e a faixa de edição/ano/gratuidade mantêm a identidade da edição, sem carregar o cartaz de 4,5 MB.
+## Atualizar a programação
 
-A entrada do hero termina em menos de um segundo. Ao rolar, a introdução, a programação, o conteúdo de Sobre, os detalhes e o rodapé entram suavemente na tela uma vez, sem deslocar os dados que o visitante está lendo. O ambiente tem ciclos de 24–30 segundos; cursor e scroll deslocam apenas as camadas decorativas. O cursor funciona somente em desktop com mouse. O movimento pausa fora da tela e em abas ocultas; `prefers-reduced-motion` apresenta a composição estática. Até 760px, a marca do hero fica oculta para manter o fluxo entre título, descrição e CTAs. A programação vem diretamente depois do hero, sem a faixa de aviso demonstrativo.
+Edite [`src/data.ts`](src/data.ts). O arquivo contém as fases do evento, os dias e a lista de atividades. Atualmente, a única atividade publicada é a **1ª CSP — Competição SEMINFO de Programação**.
 
-Na programação, o CTA principal rola até a agenda. Em atividades, “Explorar inscrições” mantém o filtro de inscrições abertas. As demais rotas, filtros e detalhes usam a lógica existente.
+Cada atividade tem um `id` estável, usado na rota de detalhes. Os campos principais são:
 
-Para repetir a verificação no Chrome instalado, disponibilize Playwright fora das dependências do app e execute `node scripts/verify-hero.cjs`. `PLAYWRIGHT_MODULE` aceita o caminho do pacote temporário e `HERO_URL` define a URL local (padrão: `http://127.0.0.1:5174`). O script verifica oito larguras, as outras rotas, cursor, hover, scroll, movimento reduzido, menu, filtros e detalhes; salva as capturas e o relatório em `output/screenshots`.
+| Campo | Orientação |
+| --- | --- |
+| `title`, `subtitle`, `type` | Nome, subtítulo opcional e categoria (`Palestra`, `Oficina` ou `Competição`). |
+| `date`, `start`, `end` | Data em `AAAA-MM-DD` e horários em `HH:mm`, no horário de Brasília. |
+| `location`, `mode`, `speaker` | Local, modalidade (`Presencial` ou `Online`) e responsável. |
+| `description`, `requirements` | Descrição completa e requisitos exibidos nos detalhes da atividade. |
+| `registrationStatus` | `open`, `soon`, `closed`, `full` ou `none`. |
+| `registrationUrl`, `registrationDeadline` | Link real do formulário e prazo, quando aplicável. |
+| `capacity` | Número de vagas, `"limited"` para vagas limitadas sem número divulgado, `null` para sem limite, ou omitido quando a quantidade ainda será confirmada. |
+| `onlineUrl` | Link de acesso, somente para atividades online com destino confirmado. |
+| `competitionSchedule` | Etapas e horários próprios de uma competição. Use `start` e `end` quando houver intervalo; ambos são opcionais para momentos sem duração definida. |
 
-## Inscrições e atividades online
+Inclua apenas informações confirmadas. Não use links de exemplo como destino de inscrição ou transmissão. O botão de inscrição só fica ativo quando a atividade está aberta e possui um destino válido ou instruções de inscrição.
 
-`registrationStatus` aceita `open`, `closed`, `full`, `none` ou `soon`. `capacity` é o limite numérico ou `null` para ausência de limite. Capacidade não significa vagas restantes. A comissão atualiza o estado quando o formulário encerra ou o limite é atingido.
+### Fase do evento
 
-Preencha `registrationUrl` com o formulário oficial e `onlineUrl` com o acesso público à atividade online. Os campos são opcionais e **nenhum endereço externo fictício foi incluído**. Links pendentes devem ser indicados na interface, sem botões que simulem inscrição ou transmissão. Abrir um formulário não confirma participação ou garantia de vaga.
+`event.phase` define a apresentação geral do site:
 
-Use `notice` para alterações relevantes e `cancelled: true` para cancelamento, preservando o detalhe para links compartilhados anteriormente. Mantenha também o formulário externo coerente.
+- `registration`: período anterior ao evento, com chamadas para conhecer atividades e inscrições;
+- `live`: programação em andamento, com informações contextuais do dia;
+- `finished`: apresentação após o encerramento.
 
-## Antes de publicar
+`event.demo` deve permanecer `false` na versão pública. Ele controla apenas tratamentos para conteúdo e links de demonstração; não determina se as inscrições estão abertas. A disponibilidade é configurada em cada atividade.
 
-Confira programação, locais, responsáveis, inscrições, links online e textos institucionais. Valide desktop e celular, teclado, contraste e zoom. Emulação verifica layout; toque, teclado virtual e barras do navegador também precisam ser conferidos em aparelho real.
+## Publicação na Vercel
+
+O projeto usa Vite. Ao importar este repositório ou conectar o projeto existente na Vercel, confira estas configurações:
+
+- **Framework Preset:** Vite
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+- **Node.js:** 22.12 ou superior
+
+Com o repositório conectado, commits na branch de produção configurada pela Vercel geram uma nova publicação. Antes de promover uma versão, confira o resultado do build e confirme que o domínio continua associado ao projeto correto.
+
+## Estrutura do projeto
+
+```text
+src/
+├── assets/           Logos e arte oficial
+├── data.ts           Fases, dias e atividades
+├── App.tsx           Rotas e conteúdo das páginas
+├── App.css           Estilos globais e programação
+├── ActivityDetail.css
+├── AboutPage.css
+├── Hero.tsx          Hero compartilhado
+└── Hero.css
+```
+
+Os logos e materiais oficiais ficam em `src/assets/`. Preserve a proporção e a aparência dos arquivos originais ao reutilizá-los.
+
+## Antes de publicar atualizações
+
+1. Confira datas, horários, locais, responsáveis, regras e capacidade das atividades.
+2. Teste os formulários e demais links externos; confirme que as inscrições continuam abertas.
+3. Rode `npm run lint` e `npm run build`.
+4. Revise as páginas em desktop e celular, incluindo navegação por teclado e preferência por movimento reduzido.

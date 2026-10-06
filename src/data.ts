@@ -31,8 +31,8 @@ export const event: {
   phase: "registration" | "live" | "finished";
   demo: boolean;
 } = {
-  phase: "live",
-  demo: true,
+  phase: "registration",
+  demo: false,
 };
 
 export const days = [
