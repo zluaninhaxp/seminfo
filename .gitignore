@@ -10,9 +10,27 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.vite/
+.cache/
+.oxlint/
+coverage/
+playwright-report/
+test-results/
+.playwright-mcp/
+.tsbuildinfo
+*.tsbuildinfo
 .impeccable/review/
 /output/screenshots/
 *.local
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Editor directories and files
 .vscode/*
