@@ -49,7 +49,7 @@ main:focus { outline: none; }
 .skip-link { position: fixed; z-index: 20; top: -100px; left: 20px; padding: 14px; background: var(--cyan); color: var(--ink); }
 .skip-link:focus { top: 12px; }
 .site-header { border-bottom: 1px solid var(--line); background: rgba(5, 11, 36, .92); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); }
-.header-inner { max-width: 1680px; min-height: 100px; padding: 10px clamp(24px, 7vw, 120px); margin: auto; display: flex; align-items: center; gap: 42px; }
+.header-inner { max-width: 1440px; min-height: 100px; padding: 10px 48px; margin: auto; display: flex; align-items: center; gap: 42px; }
 .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
 .header-logo { display: block; width: 142px; height: auto; }
 .brand small { color: var(--muted); font-size: 14px; letter-spacing: .03em; white-space: nowrap; }

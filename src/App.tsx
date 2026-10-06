@@ -449,14 +449,29 @@ function App() {
           <section className="content about-page about-sections">
             <section className="about-section about-event" aria-labelledby="about-event-title">
               <span className="about-section-mark" aria-hidden="true" />
-              <h2 id="about-event-title">Sobre o evento</h2>
-              <p>A SEMINFO é a Semana da Informática do IFSULDEMINAS – Campus Muzambinho. Reúne palestras, oficinas e encontros para compartilhar conhecimento e aproximar estudantes e profissionais.</p>
+              <h2 id="about-event-title">Sobre a SEMINFO</h2>
+              <p>A Semana da Informática, conhecida como SEMINFO, é um evento tradicional da área de Computação do IFSULDEMINAS, Campus Muzambinho. Reúne estudantes, professores, egressos e profissionais para compartilhar experiências e acompanhar diferentes caminhos da tecnologia.</p>
+              <p>Com palestras, oficinas, competições e outras atividades, a SEMINFO complementa a formação acadêmica e aproxima os participantes de novas tecnologias, experiências profissionais e do mercado.</p>
+              <div className="about-history" aria-labelledby="about-history-title">
+                <h3 id="about-history-title">Uma história construída no Campus Muzambinho</h3>
+                <p>A SEMINFO faz parte da trajetória da Informática no Campus Muzambinho e chega, em 2026, à sua <strong className="about-edition-highlight">21ª edição</strong>.</p>
+              </div>
+            </section>
+            <section className="about-section about-program" aria-labelledby="about-program-title">
+              <span className="about-section-mark" aria-hidden="true" />
+              <h2 id="about-program-title">O que acontece na SEMINFO</h2>
+              <ul className="about-program-list">
+                <li><div><h3>Palestras e conversas</h3><p>Tecnologia, carreira, pesquisa e mercado.</p></div></li>
+                <li><div><h3>Oficinas</h3><p>Experiências práticas com ferramentas e novas áreas.</p></div></li>
+                <li><div><h3>Competições e integração</h3><p>Desafios e atividades entre os participantes.</p></div></li>
+                <li><div><h3>Conexões</h3><p>Contato com estudantes, professores, profissionais e egressos.</p></div></li>
+              </ul>
             </section>
             <section className="about-section about-sponsors" aria-labelledby="about-sponsors-title">
               <div className="about-wave-decoration" aria-hidden="true"><Waves sparse /></div>
               <span className="about-section-mark" aria-hidden="true" />
               <h2 id="about-sponsors-title">Patrocinadores</h2>
-              <p>Agradecemos às empresas que apoiam a SEMINFO e contribuem para tornar este encontro possível.</p>
+              <p>Empresas e parceiros que apoiam a SEMINFO e ajudam a tornar esta experiência possível.</p>
               <div className="sponsor-logos" aria-label="Marcas patrocinadoras">
                 {sponsors.map((sponsor) => {
                   const logo = <img src={sponsor.image} alt={sponsor.name} />;
@@ -469,7 +484,7 @@ function App() {
             <section className="about-section about-realization" aria-labelledby="about-realization-title">
               <span className="about-section-mark" aria-hidden="true" />
               <h2 id="about-realization-title">Realização e organização</h2>
-              <p>IFSULDEMINAS – Campus Muzambinho e Centro Acadêmico Alan Turing.</p>
+              <p>A XXI SEMINFO é realizada pelo IFSULDEMINAS – Campus Muzambinho em conjunto com o Centro Acadêmico Alan Turing.</p>
               <div className="realization-logos">
                 <img src={instituteLogo} alt="IFSULDEMINAS – Campus Muzambinho" width="2172" height="724" />
                 <span aria-hidden="true" />
