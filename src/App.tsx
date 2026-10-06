@@ -29,6 +29,14 @@ function registrationDestination(value?: string) {
     return undefined;
   }
 }
+function isDemoRegistration(value?: string) {
+  if (!event.demo || !value) return false;
+  try {
+    return new URL(value).hostname === "example.com";
+  } catch {
+    return false;
+  }
+}
 function registrationLabel(activity: Activity) {
   if (activity.registrationStatus === "open" && !registrationDestination(activity.registrationUrl)) {
     return activity.registrationDeadline
@@ -81,6 +89,24 @@ function clock() {
   };
 }
 const readRoute = () => window.location.hash.slice(1) || "/programacao";
+const cspPromoStorageKey = "seminfo-csp-promo-dismissed-v1";
+function shouldShowCspPromo() {
+  const today = clock().date;
+  if (today < "2026-10-06" || today > "2026-10-23") return false;
+  if (!activities.some((activity) => activity.id === "desafio-programacao")) return false;
+  try {
+    return window.sessionStorage.getItem(cspPromoStorageKey) !== "dismissed";
+  } catch {
+    return true;
+  }
+}
+function rememberCspPromoDismissal() {
+  try {
+    window.sessionStorage.setItem(cspPromoStorageKey, "dismissed");
+  } catch {
+    // The modal still closes for the current visit if storage is unavailable.
+  }
+}
 const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -100,7 +126,9 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [now, setNow] = useState(clock);
   const [shareMessage, setShareMessage] = useState("");
+  const [cspPromoOpen, setCspPromoOpen] = useState(shouldShowCspPromo);
   const main = useRef<HTMLElement>(null);
+  const cspPromoDialog = useRef<HTMLDivElement>(null);
   const revealedContent = useRef<WeakSet<Element>>(new WeakSet());
   const [origin, setOrigin] = useState("/programacao");
   const lastRoute = useRef(route);
@@ -108,6 +136,45 @@ function App() {
   const [showEarlier, setShowEarlier] = useState(false);
   const position = useRef(0);
   const returning = useRef(false);
+  useEffect(() => {
+    if (!cspPromoOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousOverflow = document.body.style.overflow;
+    const dialog = cspPromoDialog.current;
+    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
+    ) ?? []);
+    focusable()[0]?.focus();
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        rememberCspPromoDismissal();
+        setCspPromoOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const elements = focusable();
+      if (!elements.length) return;
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [cspPromoOpen]);
   useEffect(() => {
     const handle = () => {
       setRoute(readRoute());
@@ -219,6 +286,8 @@ function App() {
     isToday && !showEarlier && filtered.some((a) => a.end > now.time)
       ? filtered.filter((a) => a.end > now.time)
       : filtered;
+  const showUndisclosedSchedule =
+    !isActivities && filtered.length === 0 && !search.trim() && type === "Todas" && !openOnly;
   const groups = [
     ...new Set(visible.map((a) => (isActivities ? a.date : a.start))),
   ];
@@ -288,7 +357,7 @@ function App() {
         {a.registrationStatus !== "open" && (
           <p className="action-note">{labels[a.registrationStatus]}</p>
         )}
-        {event.demo && a.registrationStatus === "open" && registrationDestination(a.registrationUrl) && <p className="detail-demo-note">Formulário demonstrativo</p>}
+        {a.registrationStatus === "open" && isDemoRegistration(a.registrationUrl) && <p className="detail-demo-note">Formulário demonstrativo</p>}
       </div>
     );
   }
@@ -670,10 +739,13 @@ function App() {
                   </div>
                 )}
                 {filtered.length === 0 ? (
-                  <div className="empty">
-                    <h3>Nenhuma atividade encontrada.</h3>
+                  <div className={`empty ${showUndisclosedSchedule ? "empty-undisclosed" : ""}`}>
+                    {showUndisclosedSchedule && <span className="empty-undisclosed-mark" aria-hidden="true" />}
+                    <h3>{showUndisclosedSchedule ? "Programação ainda não divulgada" : "Nenhuma atividade encontrada."}</h3>
                     <p>
-                      {search || type !== "Todas" || openOnly
+                      {showUndisclosedSchedule
+                        ? "Em breve teremos novidades para este dia."
+                        : search || type !== "Todas" || openOnly
                         ? "Experimente limpar os filtros ou buscar outro termo."
                         : "Ainda não há atividades publicadas para este dia."}
                     </p>
@@ -780,6 +852,54 @@ function App() {
           Sobre o evento
         </a>
       </footer>
+      {cspPromoOpen && (
+        <div
+          className="csp-promo-backdrop"
+          onClick={(e) => {
+            if (e.target !== e.currentTarget) return;
+            rememberCspPromoDismissal();
+            setCspPromoOpen(false);
+          }}
+        >
+          <div
+            className="csp-promo-dialog"
+            ref={cspPromoDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="csp-promo-title"
+            aria-describedby="csp-promo-description"
+            tabIndex={-1}
+          >
+            <button
+              className="csp-promo-close"
+              type="button"
+              aria-label="Fechar destaque da CSP"
+              onClick={() => {
+                rememberCspPromoDismissal();
+                setCspPromoOpen(false);
+              }}
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+            <p className="csp-promo-eyebrow">XXI SEMINFO · COMPETIÇÃO</p>
+            <h2 id="csp-promo-title">Inscrições abertas para a CSP</h2>
+            <p id="csp-promo-description">
+              A 1ª Competição SEMINFO de Programação já está com inscrições abertas.
+            </p>
+            <a
+              className="csp-promo-cta"
+              href="#/atividade/desafio-programacao"
+              onClick={() => {
+                rememberCspPromoDismissal();
+                setCspPromoOpen(false);
+                openActivity();
+              }}
+            >
+              Conhecer a CSP <Arrow />
+            </a>
+          </div>
+        </div>
+      )}
     </>
   );
 }
