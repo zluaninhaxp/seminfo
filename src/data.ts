@@ -1,7 +1,8 @@
 ﻿export interface Activity {
   id: string;
   title: string;
-  type: "Palestra" | "Oficina" | "Minicurso" | "Encontro";
+  subtitle?: string;
+  type: "Palestra" | "Oficina" | "Competição";
   date: string;
   start: string;
   end: string;
@@ -9,11 +10,19 @@
   mode: "Presencial" | "Online";
   speaker: string;
   description: string;
-  requirements: string[];
-  capacity: number | null;
+  requirements: (string | { text: string; emphasize: string[] })[];
+  capacity?: number | null | "limited";
   registrationStatus: "open" | "closed" | "full" | "none" | "soon";
   registrationUrl?: string;
+  registrationDeadline?: string;
+  registrationInstructions?: string;
   onlineUrl?: string;
+  competitionSchedule?: {
+    date: string;
+    start?: string;
+    end?: string;
+    title: string;
+  }[];
   cancelled?: boolean;
   notice?: string;
 }
@@ -74,53 +83,47 @@ export const activities: Activity[] = [
     registrationUrl: "https://example.com/seminfo/inscricao-interfaces",
   },
   {
-    id: "dados-no-cotidiano",
-    title: "Dados no cotidiano: perguntas antes dos gráficos",
-    type: "Minicurso",
-    date: "2026-10-26",
-    start: "14:00",
-    end: "17:00",
-    location: "Laboratório de Informática 2",
-    mode: "Presencial",
-    speaker: "Camila Rocha · instrutora fictícia",
-    description:
-      "Minicurso para formular perguntas, organizar uma base simples e comunicar resultados em gráficos claros.",
-    requirements: ["Noções básicas de planilhas"],
-    capacity: 30,
-    registrationStatus: "full",
-  },
-  {
-    id: "primeiros-passos-carreira",
-    title: "Primeiros passos na carreira em tecnologia",
-    type: "Encontro",
-    date: "2026-10-26",
-    start: "14:00",
-    end: "15:30",
-    location: "Auditório Central",
-    mode: "Presencial",
-    speaker: "João Lima e Ana Souza · participantes fictícios",
-    description:
-      "Conversa sobre formação, primeiras experiências de trabalho e caminhos para entrar na área de tecnologia.",
-    requirements: [],
-    capacity: null,
-    registrationStatus: "open",
-  },
-  {
     id: "desafio-programacao",
-    title: "Um dia de desafios de programação",
-    type: "Encontro",
-    date: "2026-10-27",
-    start: "09:00",
-    end: "17:00",
-    location: "Laboratório de Informática 1",
+    title: "1ª CSP: Competição SEMINFO de Programação",
+    subtitle: "Encerramento da SEMINFO",
+    type: "Competição",
+    date: "2026-10-29",
+    start: "13:15",
+    end: "15:30",
+    location: "Prédio da Informática",
     mode: "Presencial",
-    speaker: "Equipe de organização · demonstração",
+    speaker: "Centro Acadêmico Alan Turing",
     description:
-      "Um dia de desafios colaborativos de programação, com etapas em equipes e pausas entre rodadas.",
-    requirements: ["Familiaridade com uma linguagem de programação"],
-    capacity: 30,
+      "A CSP é uma competição de programação organizada pelo Centro Acadêmico Alan Turing como parte da SEMINFO. Haverá uma prova de 7 problemas para cada categoria, Técnico e Graduação. Não é necessária experiência em programação competitiva.",
+    requirements: [
+      {
+        text: "Exclusiva para estudantes do IFSULDEMINAS Campus Muzambinho dos cursos Técnico em Informática Integrado ou Subsequente, ou Ciência da Computação.",
+        emphasize: ["Técnico em Informática Integrado ou Subsequente", "Ciência da Computação"],
+      },
+      {
+        text: "Equipes de 1 a 3 estudantes da mesma categoria. Quem tiver equipe incompleta pode pedir para encontrar outros participantes no formulário.",
+        emphasize: ["1 a 3 estudantes", "mesma categoria"],
+      },
+      {
+        text: "Linguagens permitidas: C, C++, Java e Python.",
+        emphasize: ["C, C++, Java e Python"],
+      },
+      {
+        text: "Cada equipe usa um computador do campus, com o ambiente já preparado. Material impresso e conversa entre integrantes são permitidos; internet e dispositivos digitais pessoais não.",
+        emphasize: ["computador do campus", "Material impresso e conversa entre integrantes são permitidos", "internet e dispositivos digitais pessoais não"],
+      },
+    ],
+    capacity: "limited",
     registrationStatus: "open",
-    registrationUrl: "https://example.com/seminfo/inscricao-desafio",
+    registrationDeadline: "23/10",
+    registrationInstructions:
+      "Inscrição gratuita por equipe até 23/10. Link do formulário a divulgar.",
+    competitionSchedule: [
+      { date: "2026-10-29", start: "13:00", end: "13:15", title: "Entrada e preparação nos laboratórios" },
+      { date: "2026-10-29", start: "13:15", end: "15:30", title: "Prova" },
+      { date: "2026-10-29", start: "15:30", end: "16:00", title: "Deslocamento ao auditório e coffee break" },
+      { date: "2026-10-29", start: "16:00", title: "Premiação da CSP e encerramento da SEMINFO" },
+    ],
   },
   {
     id: "seguranca-aplicacoes",
@@ -173,21 +176,5 @@ export const activities: Activity[] = [
     registrationStatus: "open",
     registrationUrl: "https://example.com/seminfo/inscricao-acessibilidade",
     onlineUrl: "https://example.com/seminfo/transmissao-acessibilidade",
-  },
-  {
-    id: "conexoes-encerramento",
-    title: "Conexões para além da SEMINFO",
-    type: "Encontro",
-    date: "2026-10-29",
-    start: "16:00",
-    end: "17:00",
-    location: "Auditório Central",
-    mode: "Presencial",
-    speaker: "Centro Acadêmico Alan Turing",
-    description:
-      "Encontro de encerramento para compartilhar aprendizados e combinar formas de manter as trocas depois do evento.",
-    requirements: [],
-    capacity: null,
-    registrationStatus: "none",
   },
 ];

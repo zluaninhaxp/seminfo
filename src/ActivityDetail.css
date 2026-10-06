@@ -24,9 +24,22 @@
 .detail-page .detail-body h2 { font-size: 25px; margin: 26px 0 10px; }
 .detail-body h2::before { content: ""; display: block; width: 22px; height: 3px; background: var(--pink); margin-bottom: 8px; }
 .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 17px; line-height: 1.65; }
+.competition-schedule { margin-top: 28px; }
+.detail-page .competition-schedule h2 { margin-top: 0; }
+.competition-schedule ol { display: grid; gap: 15px; margin: 16px 0 0; padding: 0; list-style: none; }
+.competition-schedule li { display: grid; grid-template-columns: minmax(115px, auto) minmax(0, 1fr); align-items: baseline; gap: 20px; }
+.competition-schedule-time { color: var(--cyan); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.competition-schedule-time > span { color: #f3cb58; }
+.competition-schedule-time small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
+.competition-schedule h3 { color: var(--text); font-size: 17px; line-height: 1.45; font-weight: 600; }
+.competition-rules { margin-top: 34px; }
+.competition-rules li + li { margin-top: 7px; }
+.competition-highlight { padding: 0 .14em; border-radius: 2px; background: linear-gradient(transparent 24%, var(--pink) 24%, var(--pink) 94%, transparent 94%); color: var(--ink); font-weight: 700; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .detail-speakers { display: flex; flex-wrap: wrap; gap: 18px 26px; color: var(--muted); }
 .detail-speaker { display: flex; align-items: center; gap: 20px; min-width: 0; }
 .speaker-avatar { display: grid; place-items: center; flex: 0 0 60px; width: 60px; height: 60px; border: 2px solid var(--cyan); border-radius: 50%; color: var(--text); font-size: 19px; font-weight: 700; }
+.speaker-avatar-image { overflow: hidden; background: var(--ink); }
+.speaker-avatar-image img { display: block; width: 100%; height: 100%; padding: 3px; border-radius: inherit; object-fit: contain; }
 .detail-speaker p { overflow-wrap: anywhere; line-height: 1.5; }
 .detail-speaker strong { color: var(--text); font-size: 17px; }
 .detail-speaker small { display: block; font-size: 15px; }
@@ -62,6 +75,10 @@
   .detail-intro h1 { font-size: clamp(32px, 7vw, 48px); }
   .detail-decoration { width: 100%; opacity: .14; }
   .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 16px; }
+  .competition-schedule li { grid-template-columns: minmax(92px, auto) minmax(0, 1fr); gap: 14px; }
+  .competition-schedule-time { font-size: 15px; }
+  .competition-schedule h3 { font-size: 16px; }
+  .competition-rules { margin-top: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { .detail-actions svg { transition: none; } .detail-page .detail-actions .button:hover svg { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .detail-page .back-link, .detail-page .back-link > span { transition: none; } .detail-page .back-link:hover > span { transform: none; } }

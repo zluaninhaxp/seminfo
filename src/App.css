@@ -483,6 +483,7 @@ main:focus { outline: none; }
 .programme-activity-list .activity-type { display: inline-flex; padding: 4px 14px; border: 1px solid currentColor; border-radius: 999px; font-size: 13px; line-height: 1.35; color: var(--pink); }
 .programme-activity-list .category-cyan { color: var(--cyan); }
 .programme-activity-list .activity-row h3 { max-width: none; font-size: clamp(21px, 2vw, 25px); line-height: 1.3; }
+.programme-activity-list .activity-subtitle { margin: 5px 0 0; color: var(--cyan); font-size: 15px; font-weight: 600; line-height: 1.4; }
 .programme-activity-list .activity-meta { flex-direction: row; gap: 8px 24px; font-size: 14px; margin-top: 9px; }
 .programme-activity-list .activity-meta > span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .programme-activity-list .activity-meta svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--cyan); }

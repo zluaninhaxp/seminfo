@@ -8,6 +8,7 @@ import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
+import caSeminfoPhoto from "./assets/Organizadores/CAseminfo.jpeg";
 
 const labels = {
   open: "Inscrições abertas",
@@ -27,6 +28,25 @@ function registrationDestination(value?: string) {
   } catch {
     return undefined;
   }
+}
+function registrationLabel(activity: Activity) {
+  if (activity.registrationStatus === "open" && !registrationDestination(activity.registrationUrl)) {
+    return activity.registrationDeadline
+      ? `Inscrições abertas até ${activity.registrationDeadline}`
+      : "Inscrições em breve";
+  }
+  return labels[activity.registrationStatus];
+}
+function renderRequirement(requirement: Activity["requirements"][number]) {
+  if (typeof requirement === "string") return requirement;
+  const pattern = new RegExp(
+    `(${requirement.emphasize.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+  );
+  return requirement.text.split(pattern).map((part, index) =>
+    requirement.emphasize.includes(part)
+      ? <mark className="competition-highlight" key={`${part}-${index}`}>{part}</mark>
+      : part,
+  );
 }
 function AgendaIcon({ location = false }: { location?: boolean }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -182,7 +202,7 @@ function App() {
           (a) =>
             (isActivities || a.date === day) &&
             (type === "Todas" || a.type === type) &&
-            (!openOnly || (a.registrationStatus === "open" && !a.cancelled && Boolean(registrationDestination(a.registrationUrl)))) &&
+            (!openOnly || (a.registrationStatus === "open" && !a.cancelled && (Boolean(registrationDestination(a.registrationUrl)) || Boolean(a.registrationDeadline)))) &&
             normalize(`${a.title} ${a.speaker} ${a.location}`).includes(
               normalize(search),
             ),
@@ -260,9 +280,9 @@ function App() {
             </a>
           ) : (
             <p className="action-note">
-              {event.demo
+              {a.registrationInstructions ?? (event.demo
                 ? "Formulário indisponível nesta demonstração."
-                : "Formulário de inscrição a divulgar."}
+                : "Formulário de inscrição a divulgar.")}
             </p>
           ))}
         {a.registrationStatus !== "open" && (
@@ -400,43 +420,72 @@ function App() {
               <article className="detail-body">
                 <h2>Sobre a atividade</h2>
                 <p>{detail.description}</p>
+                {detail.competitionSchedule?.length ? (
+                  <section className="competition-schedule" aria-labelledby="competition-schedule-title">
+                    <h2 id="competition-schedule-title">Cronograma da competição</h2>
+                    <ol>
+                      {detail.competitionSchedule.map((stage) => (
+                        <li key={`${stage.date}-${stage.start ?? "sem-horario"}-${stage.title}`}>
+                          <div className="competition-schedule-time">
+                            {stage.start ? (
+                              <time dateTime={`${stage.date}T${stage.start}:00`}>
+                                {stage.start}{stage.end ? `–${stage.end}` : ""}
+                              </time>
+                            ) : <span>Horário a divulgar</span>}
+                            <small>{dateLabel(stage.date)}</small>
+                          </div>
+                          <h3>{stage.title}</h3>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                ) : null}
                 <h2>Quem conduz</h2>
                 <div className="detail-speakers">
                   {detail.speaker ? detail.speaker.split(/\s+e\s+|\s*;\s*/).map((speaker, index) => {
                     const [name, ...notes] = speaker.split("·");
                     const words = name.trim().split(/\s+/);
                     const initials = [words[0]?.[0], words.length > 1 ? words[words.length - 1]?.[0] : ""].join("").toUpperCase();
-                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className="speaker-avatar" aria-hidden="true">{initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
+                    const isAcademicCenter = name.trim() === "Centro Acadêmico Alan Turing";
+                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${isAcademicCenter ? "speaker-avatar-image" : ""}`} aria-hidden="true">{isAcademicCenter ? <img src={caSeminfoPhoto} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
                   }) : <p>Responsável a divulgar.</p>}
                 </div>
-                <h2>Antes de participar</h2>
-                {detail.requirements.length ? (
-                  <ul>
-                    {detail.requirements.map((r) => (
-                      <li key={r}>{r}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>Não há requisitos informados.</p>
-                )}
+                <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
+                  <h2 id="requirements-title">Antes de participar</h2>
+                  {detail.requirements.length ? (
+                    <ul>
+                      {detail.requirements.map((r) => (
+                        <li key={typeof r === "string" ? r : r.text}>{renderRequirement(r)}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Não há requisitos informados.</p>
+                  )}
+                </section>
               </article>
               <aside className="participation">
-                <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && registrationDestination(detail.registrationUrl) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
-                  <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : detail.registrationStatus === "open" && !registrationDestination(detail.registrationUrl) ? "Inscrições em breve" : labels[detail.registrationStatus]}
+                <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && (registrationDestination(detail.registrationUrl) || detail.registrationDeadline) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
+                  <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : registrationLabel(detail)}
                 </span>
                 <h2>Participe</h2>
                 <p className="capacity">
                   {detail.capacity === null
-                    ? "Sem limite de vagas"
-                    : `${detail.capacity} vagas`}
+                    ? "Vagas ilimitadas"
+                    : detail.capacity === "limited"
+                      ? "Vagas limitadas"
+                    : typeof detail.capacity === "number"
+                      ? `${detail.capacity} vagas`
+                      : "Vagas a confirmar"}
                 </p>
-                {detail.capacity !== null && (
+                {typeof detail.capacity === "number" && (
                   <p>Preenchimento por ordem de inscrição.</p>
                 )}
                 {actions(detail)}
-                <p className="registration-help">
-                  {detail.registrationStatus === "none" ? "Esta atividade não exige inscrição." : "A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário."}
-                </p>
+                {detail.registrationStatus === "none" ? (
+                  <p className="registration-help">Esta atividade não exige inscrição.</p>
+                ) : !detail.registrationInstructions ? (
+                  <p className="registration-help">A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário.</p>
+                ) : null}
                 <button className="text-button" onClick={share}>
                   <DetailIcon kind="link" />
                   Compartilhar atividade
@@ -651,8 +700,9 @@ function App() {
                               className={`activity-row ${a.cancelled ? "cancelled" : ""}`}
                             >
                               <>
-                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" || a.type === "Minicurso" ? "category-cyan" : ""}`}>{a.type}</span></div>
+                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span></div>
                                 <h3><a href={`#/atividade/${a.id}`} onClick={openActivity}>{a.title}</a></h3>
+                                {a.subtitle && <p className="activity-subtitle">{a.subtitle}</p>}
                                 <div className="activity-meta">
                                   <span><AgendaIcon />{a.start}–{a.end}</span>
                                   <span><AgendaIcon location />{a.location}</span>
@@ -661,15 +711,15 @@ function App() {
                                 {a.notice && <p className="row-notice">{a.notice}</p>}
                                 {temporal(a) && <p className="temporal">{temporal(a)}</p>}
                                 <div className="activity-bottom">
-                                  <span className={`agenda-status ${a.cancelled ? "agenda-status-cancelled" : a.registrationStatus === "full" ? "agenda-status-full" : a.registrationStatus === "open" && registrationDestination(a.registrationUrl) ? "agenda-status-open" : a.registrationStatus === "open" || a.registrationStatus === "soon" ? "agenda-status-soon" : ""}`}>
+                                  <span className={`agenda-status ${a.cancelled ? "agenda-status-cancelled" : a.registrationStatus === "full" ? "agenda-status-full" : a.registrationStatus === "open" && (registrationDestination(a.registrationUrl) || a.registrationDeadline) ? "agenda-status-open" : a.registrationStatus === "open" || a.registrationStatus === "soon" ? "agenda-status-soon" : ""}`}>
                                     <span className="agenda-status-dot" aria-hidden="true" />
-                                    {a.cancelled ? "Cancelada" : a.registrationStatus === "open" && !registrationDestination(a.registrationUrl) ? "Inscrições em breve" : labels[a.registrationStatus]}
+                                    {a.cancelled ? "Cancelada" : registrationLabel(a)}
                                   </span>
                                   <div className="agenda-actions">
                                     <a className="agenda-button agenda-details" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Ver detalhes de ${a.title}`}>Ver detalhes<Arrow diagonal /></a>
-                                    {!a.cancelled && a.registrationStatus === "open" && (registrationDestination(a.registrationUrl)
+                                    {!a.cancelled && a.registrationStatus === "open" && (registrationDestination(a.registrationUrl) || a.registrationInstructions)
                                       ? <a className="agenda-button agenda-register" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Inscreva-se em ${a.title}`}>Inscreva-se<Arrow /></a>
-                                      : <button className="agenda-button agenda-register" disabled>Inscreva-se<Arrow /></button>)}
+                                      : <button className="agenda-button agenda-register" disabled>Inscreva-se<Arrow /></button>}
                                   </div>
                                 </div>
                               </>
