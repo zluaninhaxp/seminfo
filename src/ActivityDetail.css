@@ -1,0 +1,67 @@
+.detail-page { position: relative; isolation: isolate; padding-top: 24px; }
+.detail-decoration { position: absolute; top: 0; right: 0; width: 65%; height: 260px; overflow: hidden; pointer-events: none; z-index: -1; opacity: .28; mask-image: linear-gradient(90deg, transparent, #000 45%); }
+.detail-decoration .hero-waves { position: absolute; inset: 0; width: 100%; height: 100%; }
+.detail-decoration .hero-wave-drift { animation: none; }
+.detail-page .back-link { display: inline-flex; align-items: center; gap: 11px; min-height: 44px; margin: 0 0 26px -12px; padding: 7px 14px 7px 10px; border: 1px solid transparent; border-radius: 999px; color: var(--cyan); font-size: 15px; font-weight: 600; text-decoration: none; transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease; }
+.detail-page .back-link > span { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid currentColor; border-radius: 50%; font-size: 18px; line-height: 1; transition: transform 180ms ease; }
+.detail-page .back-link:hover { background: rgba(85, 229, 242, .08); border-color: rgba(85, 229, 242, .35); text-decoration: none; }
+.detail-page .back-link:hover > span { transform: translateX(-3px); }
+.detail-page .detail-layout { grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr); grid-template-areas: "intro participation" "summary participation" "body participation"; gap: 0 48px; padding-bottom: 32px; }
+.detail-intro { grid-area: intro; }
+.detail-page .detail-type { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 24px; }
+.detail-type > span { padding: 4px 18px; border: 1px solid currentColor; border-radius: 999px; font-size: 14px; font-weight: 600; }
+.detail-type > span:first-child { color: var(--pink); }
+.detail-intro h1 { max-width: 23ch; margin: 0 0 30px; font-size: clamp(34px, 4vw, 62px); line-height: 1.12; letter-spacing: -.035em; font-weight: 700; overflow-wrap: anywhere; }
+.detail-intro h1::before { content: ""; display: block; width: 28px; height: 3px; background: var(--pink); margin-bottom: 16px; }
+.detail-page .detail-summary { grid-area: summary; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 26px 0; margin-bottom: 0; }
+.detail-summary > div { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.detail-summary > div + div { border-left: 1px solid var(--line); padding-left: 18px; }
+.detail-summary svg { flex: 0 0 30px; width: 30px; height: 30px; color: var(--cyan); }
+.detail-page .detail-summary p { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; line-height: 1.5; }
+.detail-page .detail-summary small { font-size: 14px; font-weight: 400; }
+.detail-summary > div:first-child small { text-transform: capitalize; }
+.detail-body { grid-area: body; min-width: 0; }
+.detail-page .detail-body h2 { font-size: 25px; margin: 26px 0 10px; }
+.detail-body h2::before { content: ""; display: block; width: 22px; height: 3px; background: var(--pink); margin-bottom: 8px; }
+.detail-page .detail-body > p, .detail-page .detail-body li { font-size: 17px; line-height: 1.65; }
+.detail-speakers { display: flex; flex-wrap: wrap; gap: 18px 26px; color: var(--muted); }
+.detail-speaker { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.speaker-avatar { display: grid; place-items: center; flex: 0 0 60px; width: 60px; height: 60px; border: 2px solid var(--cyan); border-radius: 50%; color: var(--text); font-size: 19px; font-weight: 700; }
+.detail-speaker p { overflow-wrap: anywhere; line-height: 1.5; }
+.detail-speaker strong { color: var(--text); font-size: 17px; }
+.detail-speaker small { display: block; font-size: 15px; }
+.detail-page .participation { grid-area: participation; align-self: stretch; margin-top: 130px; padding: 12px 0 0 40px; border: 0; border-left: 1px solid var(--line); border-radius: 0; background: transparent; }
+.detail-registration-status { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 7px 15px; color: var(--muted); font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+.detail-registration-status > span { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: currentColor; }
+.detail-status-open { color: var(--cyan); border-color: var(--cyan); }
+.detail-status-full { color: #ff729a; border-color: #e8507d; }
+.detail-status-soon { color: #f3cb58; border-color: #e9bd42; }
+.detail-page .participation h2 { font-size: 34px; margin-bottom: 14px; }
+.detail-page .participation .capacity { font-size: 23px; font-weight: 600; }
+.detail-page .detail-actions { margin: 22px 0 26px; gap: 10px; }
+.detail-page .detail-actions .button { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 58px; background: var(--cyan); color: var(--ink); border: 1px solid var(--cyan); border-radius: 9px; font-size: 20px; font-weight: 700; }
+.detail-actions svg { width: 22px; height: 22px; transition: transform 180ms ease; }
+.detail-page .detail-actions .button:hover { background: var(--text); border-color: var(--text); }
+.detail-page .detail-actions .button:hover svg { transform: translate(2px, -2px); }
+.detail-page .detail-demo-note { color: var(--pink); font-size: 14px; }
+.detail-page .participation .registration-help { font-size: 16px; line-height: 1.65; padding-top: 24px; margin-bottom: 26px; }
+.detail-page .participation .text-button { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; min-height: 50px; width: 100%; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; }
+.detail-page .participation .text-button svg { width: 22px; height: 22px; flex-shrink: 0; }
+.detail-page .participation .text-button:hover { background: var(--cyan); color: var(--ink); }
+.detail-page a:focus-visible, .detail-page button:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; }
+.detail-page .participation [role="status"] { margin-top: 12px; }
+@media (max-width: 1100px) {
+  .detail-page .detail-layout { gap: 0 28px; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
+  .detail-page .participation { padding-left: 24px; }
+  .detail-page .detail-summary { grid-template-columns: 1fr; gap: 18px; }
+  .detail-summary > div + div { padding-left: 0; border: 0; }
+}
+@media (max-width: 760px) {
+  .detail-page .detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "summary" "participation" "body"; }
+  .detail-page .participation { margin-top: 0; padding: 28px 0; border-left: 0; border-bottom: 1px solid var(--line); }
+  .detail-intro h1 { font-size: clamp(32px, 7vw, 48px); }
+  .detail-decoration { width: 100%; opacity: .14; }
+  .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .detail-actions svg { transition: none; } .detail-page .detail-actions .button:hover svg { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .detail-page .back-link, .detail-page .back-link > span { transition: none; } .detail-page .back-link:hover > span { transform: none; } }

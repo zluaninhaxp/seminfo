@@ -1,7 +1,10 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { activities, days, event, type Activity } from "./data";
 import "./App.css";
-import { Hero } from "./Hero";
+import "./ActivityDetail.css";
+import "./AboutPage.css";
+import { Hero, Waves } from "./Hero";
+import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
@@ -13,6 +16,28 @@ const labels = {
   none: "Sem inscrição",
   soon: "Inscrições em breve",
 };
+const sponsors: { name: string; image: string; href?: string }[] = [];
+function registrationDestination(value?: string) {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    const reserved = /(^|\.)(example\.(com|org|net)|invalid|test|localhost)$/.test(url.hostname);
+    const demoDestination = event.demo && url.hostname === "example.com";
+    return ["https:", "http:"].includes(url.protocol) && (!reserved || demoDestination) ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function AgendaIcon({ location = false }: { location?: boolean }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    {location ? <><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" /><circle cx="12" cy="10" r="2.5" /></> : <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>}
+  </svg>;
+}
+function DetailIcon({ kind }: { kind: "calendar" | "link" }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+    {kind === "calendar" ? <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 2v6M17 2v6M3 10h18" /></> : <><path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0" transform="translate(1 0) scale(.9)" /></>}
+  </svg>;
+}
 const dateLabel = (date: string) =>
   new Intl.DateTimeFormat("pt-BR", {
     day: "numeric",
@@ -157,7 +182,7 @@ function App() {
           (a) =>
             (isActivities || a.date === day) &&
             (type === "Todas" || a.type === type) &&
-            (!openOnly || (a.registrationStatus === "open" && !a.cancelled)) &&
+            (!openOnly || (a.registrationStatus === "open" && !a.cancelled && Boolean(registrationDestination(a.registrationUrl)))) &&
             normalize(`${a.title} ${a.speaker} ${a.location}`).includes(
               normalize(search),
             ),
@@ -218,20 +243,20 @@ function App() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Acessar atividade online
+              {event.demo ? "Acessar transmissão demonstrativa" : "Acessar atividade online"}
             </a>
           ) : (
             <p className="action-note">Link de acesso online a divulgar.</p>
           ))}
         {a.registrationStatus === "open" &&
-          (a.registrationUrl ? (
+          (registrationDestination(a.registrationUrl) ? (
             <a
               className="button"
               href={a.registrationUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Inscrever-se no formulário
+              Inscreva-se <Arrow diagonal />
             </a>
           ) : (
             <p className="action-note">
@@ -243,6 +268,7 @@ function App() {
         {a.registrationStatus !== "open" && (
           <p className="action-note">{labels[a.registrationStatus]}</p>
         )}
+        {event.demo && a.registrationStatus === "open" && registrationDestination(a.registrationUrl) && <p className="detail-demo-note">Formulário demonstrativo</p>}
       </div>
     );
   }
@@ -342,6 +368,7 @@ function App() {
           </section>
         ) : detail ? (
           <section className="content detail-page">
+            <div className="detail-decoration" aria-hidden="true"><Waves sparse /></div>
             <a
               className="back-link"
               href={`#${origin}`}
@@ -349,13 +376,13 @@ function App() {
                 returning.current = true;
               }}
             >
-              Voltar{" "}
+              <span aria-hidden="true">←</span> Voltar{" "}
               {origin === "/atividades" ? "às atividades" : "à programação"}
             </a>
             <div className="detail-layout">
-              <article>
+              <div className="detail-intro">
                 <div className="detail-type">
-                  {detail.type} · {detail.mode}
+                  <span>{detail.type}</span><span>{detail.mode}</span>
                 </div>
                 <h1>{detail.title}</h1>
                 {detail.cancelled && (
@@ -364,17 +391,24 @@ function App() {
                 {detail.notice && (
                   <p className="change-notice">{detail.notice}</p>
                 )}
+              </div>
                 <div className="detail-summary">
-                  <p>
-                    {dateLabel(detail.date)} · {detail.start}–{detail.end}
-                    <small>Horário de Brasília</small>
-                  </p>
-                  <p>{detail.location}</p>
+                  <div><DetailIcon kind="calendar" /><p>{dateLabel(detail.date)}<small>{new Intl.DateTimeFormat("pt-BR", { weekday: "long", timeZone: "America/Sao_Paulo" }).format(new Date(`${detail.date}T12:00:00-03:00`))}</small></p></div>
+                  <div><AgendaIcon /><p>{detail.start}–{detail.end}<small>Horário de Brasília</small></p></div>
+                  <div><AgendaIcon location /><p>{detail.location || "Local a divulgar"}<small>{detail.mode}</small></p></div>
                 </div>
+              <article className="detail-body">
                 <h2>Sobre a atividade</h2>
                 <p>{detail.description}</p>
                 <h2>Quem conduz</h2>
-                <p>{detail.speaker}</p>
+                <div className="detail-speakers">
+                  {detail.speaker ? detail.speaker.split(/\s+e\s+|\s*;\s*/).map((speaker, index) => {
+                    const [name, ...notes] = speaker.split("·");
+                    const words = name.trim().split(/\s+/);
+                    const initials = [words[0]?.[0], words.length > 1 ? words[words.length - 1]?.[0] : ""].join("").toUpperCase();
+                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className="speaker-avatar" aria-hidden="true">{initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
+                  }) : <p>Responsável a divulgar.</p>}
+                </div>
                 <h2>Antes de participar</h2>
                 {detail.requirements.length ? (
                   <ul>
@@ -387,6 +421,9 @@ function App() {
                 )}
               </article>
               <aside className="participation">
+                <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && registrationDestination(detail.registrationUrl) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
+                  <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : detail.registrationStatus === "open" && !registrationDestination(detail.registrationUrl) ? "Inscrições em breve" : labels[detail.registrationStatus]}
+                </span>
                 <h2>Participe</h2>
                 <p className="capacity">
                   {detail.capacity === null
@@ -398,86 +435,47 @@ function App() {
                 )}
                 {actions(detail)}
                 <p className="registration-help">
-                  A inscrição é feita por atividade, em formulário externo.
-                  Consulte as orientações de confirmação no formulário.
+                  {detail.registrationStatus === "none" ? "Esta atividade não exige inscrição." : "A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário."}
                 </p>
                 <button className="text-button" onClick={share}>
-                  Copiar link da atividade
+                  <DetailIcon kind="link" />
+                  Compartilhar atividade
                 </button>
                 <p role="status">{shareMessage}</p>
               </aside>
             </div>
           </section>
         ) : isAbout ? (
-          <section className="content about-page">
-            <div className="about-intro">
-              <h2>
-                Conhecimento que
-                <br />
-                se encontra.
-              </h2>
-              <div>
-                <p>
-                  A SEMINFO reúne atividades voltadas à informática, com
-                  palestras, oficinas e oportunidades de troca entre
-                  participantes.
-                </p>
-                <p>
-                  Este site centraliza a programação, os locais e as inscrições
-                  para ajudar você a planejar sua semana e acompanhar o evento.
-                </p>
+          <section className="content about-page about-sections">
+            <section className="about-section about-event" aria-labelledby="about-event-title">
+              <span className="about-section-mark" aria-hidden="true" />
+              <h2 id="about-event-title">Sobre o evento</h2>
+              <p>A SEMINFO é a Semana da Informática do IFSULDEMINAS – Campus Muzambinho. Reúne palestras, oficinas e encontros para compartilhar conhecimento e aproximar estudantes e profissionais.</p>
+            </section>
+            <section className="about-section about-sponsors" aria-labelledby="about-sponsors-title">
+              <div className="about-wave-decoration" aria-hidden="true"><Waves sparse /></div>
+              <span className="about-section-mark" aria-hidden="true" />
+              <h2 id="about-sponsors-title">Patrocinadores</h2>
+              <p>Agradecemos às empresas que apoiam a SEMINFO e contribuem para tornar este encontro possível.</p>
+              <div className="sponsor-logos" aria-label="Marcas patrocinadoras">
+                {sponsors.map((sponsor) => {
+                  const logo = <img src={sponsor.image} alt={sponsor.name} />;
+                  return sponsor.href
+                    ? <a key={sponsor.name} href={sponsor.href} target="_blank" rel="noopener noreferrer" aria-label={sponsor.name}>{logo}</a>
+                    : <div key={sponsor.name}>{logo}</div>;
+                })}
               </div>
-            </div>
-            <div className="information">
-              <section>
-                <h2>Esta edição</h2>
-                <p>XXI Semana da Informática</p>
-                <p>
-                  26 a 29 de outubro de 2026
-                  <br />
-                  IFSULDEMINAS · Campus Muzambinho
-                </p>
-                <p className="info-emphasis">Participação gratuita.</p>
-              </section>
-              <section>
-                <h2>Como participar</h2>
-                <p>
-                  Escolha as atividades e consulte os detalhes. As inscrições
-                  são feitas individualmente por formulário.
-                </p>
-                <p>
-                  Oficinas com capacidade limitada preenchem as vagas por ordem
-                  de inscrição. Confira a disponibilidade antes de participar.
-                </p>
-                <a className="text-link" href="#/atividades">
-                  Explorar atividades
-                </a>
-              </section>
-              <section>
-                <h2>Presencial e online</h2>
-                <p>
-                  A programação informa o local de cada atividade. Quando houver
-                  atividade online, o link público estará disponível no detalhe.
-                </p>
-                <p>
-                  Orientações de acesso ao campus serão publicadas pela
-                  organização.
-                </p>
-              </section>
-              <section>
-                <h2>Organização</h2>
-                <p className="organizer">
-                  Centro Acadêmico
-                  <br />
-                  Alan Turing
-                </p>
-                <p>
-                  A comissão organizadora mantém os horários, locais, inscrições
-                  e avisos atualizados.
-                </p>
-                <p>Os canais oficiais de contato serão adicionados aqui.</p>
-              </section>
-            </div>
+            </section>
+            <section className="about-section about-realization" aria-labelledby="about-realization-title">
+              <span className="about-section-mark" aria-hidden="true" />
+              <h2 id="about-realization-title">Realização e organização</h2>
+              <p>IFSULDEMINAS – Campus Muzambinho e Centro Acadêmico Alan Turing.</p>
+              <div className="realization-logos">
+                <img src={instituteLogo} alt="IFSULDEMINAS – Campus Muzambinho" width="2172" height="724" />
+                <span aria-hidden="true" />
+                <img src={academicCenterLogo} alt="Centro Acadêmico Alan Turing" width="1859" height="325" />
+              </div>
+            </section>
           </section>
         ) : (
           <section className="content programme" aria-labelledby="list-heading">
@@ -485,11 +483,9 @@ function App() {
               <h2 id="list-heading">
                 {isActivities ? "Atividades" : "Sua semana, por dia."}
               </h2>
-              <p>
-                {isActivities
-                  ? "Busque um assunto. Encontre seu encontro."
-                  : "Horários de Brasília · Presencial e online"}
-              </p>
+              {isActivities && (
+                <p>Busque um assunto. Encontre seu encontro.</p>
+              )}
             </div>
             <div className="agenda-layout">
               <aside className="agenda-sidebar">
@@ -560,7 +556,7 @@ function App() {
                   </p>
                 </div>
               </aside>
-              <div className="agenda-list">
+              <div className="agenda-list programme-activity-list">
                 <div className="list-summary">
                   <h3>
                     {isActivities
@@ -639,46 +635,29 @@ function App() {
                               key={a.id}
                               className={`activity-row ${a.cancelled ? "cancelled" : ""}`}
                             >
-                              <div className="activity-heading">
-                                <span className="activity-type">{a.type}</span>
-                                <span
-                                  className={`status ${a.cancelled ? "important" : a.registrationStatus === "open" ? "available" : ""}`}
-                                >
-                                  {a.cancelled
-                                    ? "Cancelada"
-                                    : labels[a.registrationStatus]}
-                                </span>
-                              </div>
-                              <h3>
-                                <a
-                                  href={`#/atividade/${a.id}`}
-                                  onClick={openActivity}
-                                >
-                                  {a.title}
-                                </a>
-                              </h3>
-                              <div className="activity-meta">
-                                <span>
-                                  {a.start}–{a.end}
-                                </span>
-                                <span>{a.location}</span>
-                              </div>
-                              {a.notice && (
-                                <p className="row-notice">{a.notice}</p>
-                              )}
-                              {temporal(a) && (
-                                <p className="temporal">{temporal(a)}</p>
-                              )}
-                              <div className="activity-bottom">
-                                <span>{a.speaker}</span>
-                                <a
-                                  href={`#/atividade/${a.id}`}
-                                  onClick={openActivity}
-                                  aria-label={`Ver detalhes de ${a.title}`}
-                                >
-                                  Ver detalhes
-                                </a>
-                              </div>
+                              <>
+                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" || a.type === "Minicurso" ? "category-cyan" : ""}`}>{a.type}</span></div>
+                                <h3><a href={`#/atividade/${a.id}`} onClick={openActivity}>{a.title}</a></h3>
+                                <div className="activity-meta">
+                                  <span><AgendaIcon />{a.start}–{a.end}</span>
+                                  <span><AgendaIcon location />{a.location}</span>
+                                </div>
+                                <p className="activity-speaker">{a.speaker}</p>
+                                {a.notice && <p className="row-notice">{a.notice}</p>}
+                                {temporal(a) && <p className="temporal">{temporal(a)}</p>}
+                                <div className="activity-bottom">
+                                  <span className={`agenda-status ${a.cancelled ? "agenda-status-cancelled" : a.registrationStatus === "full" ? "agenda-status-full" : a.registrationStatus === "open" && registrationDestination(a.registrationUrl) ? "agenda-status-open" : a.registrationStatus === "open" || a.registrationStatus === "soon" ? "agenda-status-soon" : ""}`}>
+                                    <span className="agenda-status-dot" aria-hidden="true" />
+                                    {a.cancelled ? "Cancelada" : a.registrationStatus === "open" && !registrationDestination(a.registrationUrl) ? "Inscrições em breve" : labels[a.registrationStatus]}
+                                  </span>
+                                  <div className="agenda-actions">
+                                    <a className="agenda-button agenda-details" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Ver detalhes de ${a.title}`}>Ver detalhes<Arrow diagonal /></a>
+                                    {!a.cancelled && a.registrationStatus === "open" && (registrationDestination(a.registrationUrl)
+                                      ? <a className="agenda-button agenda-register" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Inscreva-se em ${a.title}`}>Inscreva-se<Arrow /></a>
+                                      : <button className="agenda-button agenda-register" disabled>Inscreva-se<Arrow /></button>)}
+                                  </div>
+                                </div>
+                              </>
                             </article>
                           ))}
                       </div>

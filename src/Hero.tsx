@@ -23,7 +23,8 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   );
 }
 
-function Waves() {
+export function Waves({ sparse = false }: { sparse?: boolean }) {
+  const lines = sparse ? waveLines.filter((_, index) => index % 4 === 0) : waveLines;
   return (
     <svg className="hero-waves" viewBox="0 0 1672 750" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
@@ -44,10 +45,10 @@ function Waves() {
         </linearGradient>
       </defs>
       <g className="hero-wave-drift hero-wave-drift-upper" stroke="url(#hero-wave-upper)" strokeWidth="1.15">
-        {waveLines.map((line, i) => <path key={i} d={line.upper} opacity={line.opacity} />)}
+        {lines.map((line, i) => <path key={i} d={line.upper} opacity={line.opacity} />)}
       </g>
       <g className="hero-wave-drift hero-wave-drift-lower" stroke="url(#hero-wave-lower)" strokeWidth="1.2">
-        {waveLines.map((line, i) => <path key={i} d={line.lower} opacity={line.opacity} />)}
+        {lines.map((line, i) => <path key={i} d={line.lower} opacity={line.opacity} />)}
       </g>
     </svg>
   );
@@ -93,7 +94,7 @@ function useHeroDepth() {
       const scrollDepth = progress * (desktop.matches ? 24 : 10);
       background.style.transform = `translate3d(${x * 8}px, ${y * 6 + scrollDepth}px, 0)`;
       background.style.opacity = String(1 - progress * 0.25);
-      mark.style.transform = `translate3d(${x * -2}px, ${y * -1.5 - scrollDepth * 0.3}px, 0)`;
+      mark.style.transform = `translate3d(${x * -18}px, ${y * -13 - scrollDepth * 0.3}px, 0)`;
       if (Math.abs(targetX - x) + Math.abs(targetY - y) + Math.abs(velocityX) + Math.abs(velocityY) > 0.002) {
         frame = requestAnimationFrame(update);
       }
@@ -170,7 +171,7 @@ export function Hero({ isAbout, isActivities, onPrimary }: {
   onPrimary: (e: MouseEvent<HTMLAnchorElement>) => void;
 }) {
   const { stage, scene, brand } = useHeroDepth();
-  const live = event.phase === "live" && !isAbout;
+  const live = event.phase === "live";
   const exploreRegistrations = isActivities && event.phase === "registration";
   return (
     <section className={`event-hero${live ? " event-hero-live" : ""}`} ref={stage} aria-labelledby="hero-heading">
@@ -203,9 +204,6 @@ export function Hero({ isAbout, isActivities, onPrimary }: {
           <div className="hero-brand-depth" ref={brand}>
             <img className="hero-official-mark" src={seminfoLogo} alt="XXI SEMINFO" width="1673" height="940" fetchPriority="high" decoding="async" />
           </div>
-        </div>
-        <div className="hero-facts" aria-label="Informações do evento">
-          <span>XXI edição</span><span>2026</span><span>Evento gratuito</span>
         </div>
       </div>
     </section>

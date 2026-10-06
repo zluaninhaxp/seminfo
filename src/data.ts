@@ -22,7 +22,7 @@ export const event: {
   phase: "registration" | "live" | "finished";
   demo: boolean;
 } = {
-  phase: "registration",
+  phase: "live",
   demo: true,
 };
 
@@ -33,8 +33,8 @@ export const days = [
   { date: "2026-10-29", label: "Quinta", short: "QUI", number: "29" },
 ];
 
-// Exemplos fictícios: a comissão substituirá títulos, salas, responsáveis e horários.
-// Não incluir URLs fictícias. Datas gerais do evento são confirmadas.
+// Dados e links fictícios para prévia do modo durante o evento. A comissão
+// deve substituir os exemplos antes da publicação. Datas do evento confirmadas.
 export const activities: Activity[] = [
   {
     id: "tecnologia-e-futuros",
@@ -43,14 +43,15 @@ export const activities: Activity[] = [
     date: "2026-10-26",
     start: "09:00",
     end: "10:30",
-    location: "Auditório · local ilustrativo",
+    location: "Auditório Central",
     mode: "Presencial",
-    speaker: "Convidado a confirmar",
+    speaker: "Marina Costa · nome fictício",
     description:
-      "Exemplo de palestra sobre o impacto da informática nas comunidades e possibilidades de atuação em tecnologia.",
+      "Demonstração fictícia de palestra sobre o impacto da informática nas comunidades e possibilidades de atuação em tecnologia.",
     requirements: [],
     capacity: null,
     registrationStatus: "open",
+    registrationUrl: "https://example.com/seminfo/inscricao-palestra",
   },
   {
     id: "interfaces-na-pratica",
@@ -59,17 +60,18 @@ export const activities: Activity[] = [
     date: "2026-10-26",
     start: "09:00",
     end: "12:00",
-    location: "Laboratório 1 · local ilustrativo",
+    location: "Laboratório de Informática 1",
     mode: "Presencial",
-    speaker: "Instrutor a confirmar",
+    speaker: "Rafael Mendes · instrutor fictício",
     description:
-      "Exemplo de oficina prática para explorar a estrutura de uma página e sua apresentação em diferentes tamanhos de tela.",
+      "Oficina prática para criar uma página web responsiva, da estrutura HTML aos primeiros ajustes de CSS.",
     requirements: [
       "Conhecimentos básicos de HTML e CSS",
       "Notebook, se disponível",
     ],
     capacity: 30,
     registrationStatus: "open",
+    registrationUrl: "https://example.com/seminfo/inscricao-interfaces",
   },
   {
     id: "dados-no-cotidiano",
@@ -78,11 +80,11 @@ export const activities: Activity[] = [
     date: "2026-10-26",
     start: "14:00",
     end: "17:00",
-    location: "Laboratório 2 · local ilustrativo",
+    location: "Laboratório de Informática 2",
     mode: "Presencial",
-    speaker: "Instrutor a confirmar",
+    speaker: "Camila Rocha · instrutora fictícia",
     description:
-      "Exemplo de minicurso sobre formular perguntas, organizar dados e comunicar resultados com clareza.",
+      "Minicurso para formular perguntas, organizar uma base simples e comunicar resultados em gráficos claros.",
     requirements: ["Noções básicas de planilhas"],
     capacity: 30,
     registrationStatus: "full",
@@ -94,11 +96,11 @@ export const activities: Activity[] = [
     date: "2026-10-26",
     start: "14:00",
     end: "15:30",
-    location: "Auditório · local ilustrativo",
+    location: "Auditório Central",
     mode: "Presencial",
-    speaker: "Participantes a confirmar",
+    speaker: "João Lima e Ana Souza · participantes fictícios",
     description:
-      "Exemplo de conversa sobre formação, experiências de trabalho e caminhos para entrar na área.",
+      "Conversa sobre formação, primeiras experiências de trabalho e caminhos para entrar na área de tecnologia.",
     requirements: [],
     capacity: null,
     registrationStatus: "open",
@@ -110,14 +112,15 @@ export const activities: Activity[] = [
     date: "2026-10-27",
     start: "09:00",
     end: "17:00",
-    location: "Laboratório 1 · local ilustrativo",
+    location: "Laboratório de Informática 1",
     mode: "Presencial",
-    speaker: "Equipe a confirmar",
+    speaker: "Equipe de organização · demonstração",
     description:
-      "Exemplo de atividade que ocupa um único dia, com desafios colaborativos. Etapas e intervalos serão definidos na programação oficial.",
+      "Um dia de desafios colaborativos de programação, com etapas em equipes e pausas entre rodadas.",
     requirements: ["Familiaridade com uma linguagem de programação"],
     capacity: 30,
-    registrationStatus: "soon",
+    registrationStatus: "open",
+    registrationUrl: "https://example.com/seminfo/inscricao-desafio",
   },
   {
     id: "seguranca-aplicacoes",
@@ -126,11 +129,11 @@ export const activities: Activity[] = [
     date: "2026-10-28",
     start: "09:00",
     end: "12:00",
-    location: "Laboratório 2 · local ilustrativo",
+    location: "Laboratório de Informática 2",
     mode: "Presencial",
-    speaker: "Instrutor a confirmar",
+    speaker: "Beatriz Nunes · instrutora fictícia",
     description:
-      "Exemplo de oficina sobre cuidados de segurança durante o desenvolvimento de aplicações.",
+      "Oficina de análise de riscos comuns e práticas para proteger aplicações desde o desenvolvimento.",
     requirements: ["Conhecimentos básicos de programação"],
     capacity: 30,
     registrationStatus: "closed",
@@ -142,14 +145,16 @@ export const activities: Activity[] = [
     date: "2026-10-28",
     start: "14:00",
     end: "15:30",
-    location: "Online · plataforma a confirmar",
+    location: "Online · transmissão de demonstração",
     mode: "Online",
-    speaker: "Convidado a confirmar",
+    speaker: "Pedro Almeida · convidado fictício",
     description:
-      "Exemplo de atividade online sobre colaboração e comunidades de software. O acesso será público quando o endereço oficial estiver disponível.",
+      "Palestra sobre colaboração em comunidades de software livre, participação e compartilhamento de conhecimento.",
     requirements: ["Conexão com a internet"],
     capacity: null,
     registrationStatus: "open",
+    registrationUrl: "https://example.com/seminfo/inscricao-comunidades",
+    onlineUrl: "https://example.com/seminfo/transmissao-comunidades",
   },
   {
     id: "acessibilidade-digital",
@@ -158,14 +163,16 @@ export const activities: Activity[] = [
     date: "2026-10-29",
     start: "09:00",
     end: "10:30",
-    location: "Online · plataforma a confirmar",
+    location: "Online · transmissão de demonstração",
     mode: "Online",
-    speaker: "Convidado a confirmar",
+    speaker: "Luiza Ferreira · convidada fictícia",
     description:
-      "Exemplo de palestra online sobre produtos digitais acessíveis e decisões de conteúdo, design e desenvolvimento.",
+      "Palestra sobre acessibilidade digital e decisões de conteúdo, design e desenvolvimento que ampliam o acesso.",
     requirements: ["Conexão com a internet"],
     capacity: null,
     registrationStatus: "open",
+    registrationUrl: "https://example.com/seminfo/inscricao-acessibilidade",
+    onlineUrl: "https://example.com/seminfo/transmissao-acessibilidade",
   },
   {
     id: "conexoes-encerramento",
@@ -174,11 +181,11 @@ export const activities: Activity[] = [
     date: "2026-10-29",
     start: "16:00",
     end: "17:00",
-    location: "Auditório · local ilustrativo",
+    location: "Auditório Central",
     mode: "Presencial",
-    speaker: "Equipe a confirmar",
+    speaker: "Centro Acadêmico Alan Turing",
     description:
-      "Exemplo de encontro de encerramento para compartilhar aprendizados e continuar as trocas depois do evento.",
+      "Encontro de encerramento para compartilhar aprendizados e combinar formas de manter as trocas depois do evento.",
     requirements: [],
     capacity: null,
     registrationStatus: "none",

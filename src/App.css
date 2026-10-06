@@ -97,6 +97,7 @@ main:focus { outline: none; }
 .list-summary h3 { font-size: 21px; font-weight: 600; }
 .list-summary > span { color: var(--muted); font-size: 12px; }
 .time-group { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 26px; border-bottom: 1px solid var(--line); }
+.programme-activity-list .time-group:last-child { border-bottom: 0; }
 .group-label { padding-top: 27px; color: var(--cyan); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .group-activities { min-width: 0; }
 .activity-row { padding: 27px 0; transition: background var(--transition); }
@@ -121,7 +122,8 @@ main:focus { outline: none; }
 .live-explanation { padding: 15px 0; color: var(--muted); font-size: 12px; }
 .cancelled h3 { color: var(--muted); }
 
-.site-footer { max-width: 1440px; margin: auto; padding: 42px 48px 50px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.site-footer { position: relative; max-width: 1440px; margin: auto; padding: 42px 48px 50px; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.site-footer::before { content: ""; position: absolute; top: 0; left: 48px; right: 48px; border-top: 1px solid var(--line); }
 .footer-brand { display: inline-block; text-decoration: none; }
 .footer-logo { display: block; width: 140px; height: auto; margin: -16px 0 -12px; }
 .site-footer p { margin-top: 13px; color: var(--muted); font-size: 12px; }
@@ -130,9 +132,10 @@ main:focus { outline: none; }
 .institutional-logos img { display: block; width: 180px; height: auto; }
 .institutional-logos img + img { width: 162px; }
 
-.about-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; padding: 20px 0 64px; }
-.about-intro h2 { font-size: 48px; line-height: 1.05; letter-spacing: -.05em; }
+.about-intro { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(36px, 5vw, 64px); align-items: end; padding: 0 0 48px; }
+.about-intro h2 { max-width: 13ch; font-size: clamp(38px, 3.35vw, 48px); line-height: 1.04; letter-spacing: -.04em; font-weight: 700; }
 .about-intro p, .information p { max-width: 60ch; color: var(--muted); }
+.about-intro p { font-size: clamp(16px, 1.2vw, 18px); line-height: 1.65; }
 .about-intro p + p { margin-top: 18px; }
 .information { display: grid; grid-template-columns: 1fr 1fr; gap: 0 70px; }
 .information section { padding: 34px 0; border-top: 1px solid var(--line); }
@@ -166,6 +169,7 @@ main:focus { outline: none; }
 
 @media (max-width: 1100px) {
   .header-inner, .site-footer { padding-inline: 32px; }
+  .site-footer::before { left: 32px; right: 32px; }
 
   .content { padding-inline: 32px; }
   .demo-notice { margin-inline: 32px; }
@@ -211,10 +215,11 @@ main:focus { outline: none; }
   .activity-bottom { align-items: flex-start; margin-top: 17px; font-size: 11px; }
   .activity-bottom > span { max-width: 60%; }
   .site-footer { margin-top: 0; padding: 34px 20px 40px; flex-direction: column; align-items: center; text-align: center; gap: 28px; }
+  .site-footer::before { left: 20px; right: 20px; }
   .site-footer > div { width: 100%; }
   .site-footer .institutional-logos { margin-inline: auto; justify-content: center; }
-  .about-intro { grid-template-columns: 1fr; gap: 26px; padding: 0 0 38px; }
-  .about-intro h2 { font-size: 38px; }
+  .about-intro { grid-template-columns: 1fr; gap: 18px; padding: 0 0 36px; }
+  .about-intro h2 { max-width: 16ch; font-size: clamp(36px, 7vw, 48px); }
   .information { grid-template-columns: 1fr; }
   .information section { padding: 28px 0; }
   .information h2 { font-size: 22px; }
@@ -255,6 +260,7 @@ main:focus { outline: none; }
 
 @media (max-width: 360px) {
   .content, .header-inner, .site-footer { padding-left: 16px; padding-right: 16px; }
+  .site-footer::before { left: 16px; right: 16px; }
   .demo-notice { margin-left: 16px; margin-right: 16px; }
 
 }
@@ -468,4 +474,45 @@ main:focus { outline: none; }
   }
   [data-scroll-reveal="pending"] { opacity: 0; transform: translate3d(0, 12px, 0); }
   [data-scroll-reveal="pending"]:focus-within { opacity: 1; transform: none; transition-delay: 0ms; }
+}
+
+/* Programme rows stay on the continuous page surface. */
+.programme-activity-list .activity-row,
+.programme-activity-list .activity-row:hover { background: transparent; border-radius: 0; box-shadow: none; padding: 20px 0; }
+.programme-activity-list .activity-heading { margin-bottom: 8px; }
+.programme-activity-list .activity-type { display: inline-flex; padding: 4px 14px; border: 1px solid currentColor; border-radius: 999px; font-size: 13px; line-height: 1.35; color: var(--pink); }
+.programme-activity-list .category-cyan { color: var(--cyan); }
+.programme-activity-list .activity-row h3 { max-width: none; font-size: clamp(21px, 2vw, 25px); line-height: 1.3; }
+.programme-activity-list .activity-meta { flex-direction: row; gap: 8px 24px; font-size: 14px; margin-top: 9px; }
+.programme-activity-list .activity-meta > span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.programme-activity-list .activity-meta svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--cyan); }
+.programme-activity-list .activity-speaker { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+.programme-activity-list .activity-bottom { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 15px; }
+.programme-activity-list .agenda-status { display: inline-flex; align-items: center; gap: 9px; min-height: 31px; max-width: 100%; padding: 4px 13px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.programme-activity-list .agenda-status-open { border-color: #00c99b; color: #00e0ae; }
+.programme-activity-list .agenda-status-soon { border-color: #e9bd42; color: #f3cb58; }
+.programme-activity-list .agenda-status-full,
+.programme-activity-list .agenda-status-cancelled { border-color: #e8507d; color: #ff729a; }
+.programme-activity-list .agenda-status-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: currentColor; }
+.programme-activity-list .agenda-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
+.programme-activity-list .agenda-button { display: inline-flex; justify-content: center; align-items: center; gap: 9px; min-height: 44px; padding: 9px 18px; border: 1px solid var(--cyan); border-radius: 11px; font: inherit; font-size: 15px; font-weight: 700; line-height: 1.4; text-decoration: none; white-space: normal; transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+.programme-activity-list .agenda-details { color: var(--cyan); background: transparent; }
+.programme-activity-list .agenda-register { background: var(--cyan); color: var(--ink); }
+.programme-activity-list .agenda-button svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform 180ms ease; }
+.programme-activity-list .agenda-details svg { width: 15px; height: 15px; }
+.programme-activity-list .agenda-details:hover { background: var(--cyan); color: var(--ink); }
+.programme-activity-list .agenda-register:not(:disabled):hover { background: var(--text); border-color: var(--text); }
+.programme-activity-list .agenda-register:not(:disabled):hover svg { transform: translateX(3px); }
+.programme-activity-list .agenda-button:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; }
+.programme-activity-list .agenda-register:disabled { background: transparent; color: var(--muted); border-color: var(--line-strong); cursor: not-allowed; }
+@media (max-width: 760px) {
+  .programme-activity-list .activity-bottom { align-items: flex-start; }
+  .programme-activity-list .activity-bottom > .status { flex-basis: 100%; }
+  .programme-activity-list .agenda-actions { width: 100%; margin-left: 0; }
+  .programme-activity-list .agenda-button { flex: 1 1 140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .programme-activity-list .agenda-button,
+  .programme-activity-list .agenda-button svg { transition: none; }
+  .programme-activity-list .agenda-register:not(:disabled):hover svg { transform: none; }
 }
