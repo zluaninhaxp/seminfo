@@ -470,7 +470,7 @@ function App() {
                 returning.current = true;
               }}
             >
-              <span aria-hidden="true">←</span> Voltar{" "}
+              <svg className="back-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7-7m-7 7 7 7" /></svg> Voltar{" "}
               {origin === "/atividades" ? "às atividades" : "à programação"}
             </a>
             <div className="detail-layout">
