@@ -98,3 +98,15 @@ Os logos e materiais oficiais ficam em `src/assets/`. Preserve a proporção e a
 2. Teste os formulários e demais links externos; confirme que as inscrições continuam abertas.
 3. Rode `npm run lint` e `npm run build`.
 4. Revise as páginas em desktop e celular, incluindo navegação por teclado e preferência por movimento reduzido.
+
+### Atividades compostas
+
+`moments` mantém os momentos dentro de uma única atividade. Cada momento tem `id` único e estável, `kind` (`talk`, `ceremony`, `break`), título e horários opcionais. Palestras aceitam descrição completa (parágrafos separados por linha em branco), `speakers` (lista de nome, afiliação e biografia opcionais), local, requisitos e links informativos. Links internos não criam inscrições; a participação continua vinculada à atividade principal. A prévia mostra título, horário e nomes, sem descrição. Os detalhes oferecem navegação pelo cronograma até cada palestra. O cronograma compacto `competitionSchedule` da CSP continua compatível.
+
+Horários gerais também podem estar ausentes; nesse caso a interface informa que serão divulgados e não atribui um estado de andamento. `registrationStatus: "unknown"` indica que as regras de inscrição não foram fornecidas.
+
+**Abertura (26/10), informações recebidas:** presencial, no Auditório Novo, a partir das 13h00. Credenciamento e cerimônia às 13h00, palestra de Renato às 14h00, palestra de Douglas às 15h00 e coffee break às 16h00.
+
+**Conteúdo ainda pendente:** títulos e descrições das palestras, nomes completos e demais dados dos palestrantes, horário de encerramento, requisitos, capacidade e regras/links de participação. Não deduzir o fim de cada momento pelo início do seguinte. Nenhum horário de encerramento ou formulário foi criado para preencher essas lacunas.
+
+Validação no navegador: com o servidor local na porta 5174, execute `node scripts/verify-composite.cjs` (Playwright e Chrome necessários; `PLAYWRIGHT_MODULE` permite indicar uma instalação externa). As massas de teste são injetadas apenas nas respostas do navegador e não alteram os dados publicados.

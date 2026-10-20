@@ -1,22 +1,42 @@
-﻿export interface Activity {
+export function activityTime(value: { start?: string; end?: string }, showOpenStart = false) {
+  if (showOpenStart && value.start && !value.end) return `A partir das ${value.start}`;
+  return value.start ? `${value.start}${value.end ? `–${value.end}` : ""}` : value.end ? `Até ${value.end}` : "Horário a divulgar";
+}
+
+export interface ActivityMoment {
+  id: string;
+  kind: "talk" | "ceremony" | "break";
+  title?: string;
+  start?: string;
+  end?: string;
+  description?: string;
+  speakers?: { name: string; affiliation?: string; bio?: string }[];
+  location?: string;
+  requirements?: string[];
+  links?: { label: string; url: string }[];
+}
+
+export interface Activity {
   id: string;
   title: string;
   subtitle?: string;
-  type: "Palestra" | "Oficina" | "Competição";
+  flag?: string;
+  type: "Abertura" | "Oficina" | "Palestra" | "Competição";
   date: string;
-  start: string;
-  end: string;
+  start?: string;
+  end?: string;
   location: string;
-  mode: "Presencial" | "Online";
+  mode?: "Presencial" | "Online";
   speaker: string;
   description: string;
   requirements: (string | { text: string; emphasize: string[] })[];
   capacity?: number | null | "limited";
-  registrationStatus: "open" | "closed" | "full" | "none" | "soon";
+  registrationStatus: "open" | "closed" | "full" | "none" | "soon" | "unknown";
   registrationUrl?: string;
   registrationDeadline?: string;
   registrationInstructions?: string;
   onlineUrl?: string;
+  moments?: ActivityMoment[];
   competitionSchedule?: {
     date: string;
     start?: string;
@@ -45,9 +65,29 @@ export const days = [
 // Atividades reais divulgadas para a XXI SEMINFO 2026.
 export const activities: Activity[] = [
   {
+    id: "abertura",
+    title: "Abertura Oficial - XXI SEMINFO 2026",
+    type: "Abertura",
+    date: "2026-10-26",
+    start: "13:00",
+    location: "Auditório Novo",
+    mode: "Presencial",
+    speaker: "",
+    description: "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
+    requirements: [],
+    registrationStatus: "unknown",
+    moments: [
+      { id: "cerimonia", kind: "ceremony", start: "13:00", title: "Credenciamento e cerimônia de abertura" },
+      { id: "palestra-1", kind: "talk", start: "14:00", speakers: [{ name: "Renato" }] },
+      { id: "palestra-2", kind: "talk", start: "15:00", speakers: [{ name: "Douglas" }] },
+      { id: "coffee-break", kind: "break", start: "16:00", title: "Coffee break" },
+    ],
+  },
+  {
     id: "desafio-programacao",
     title: "1ª CSP: Competição SEMINFO de Programação",
     subtitle: "Encerramento da SEMINFO",
+    flag: "Encerramento",
     type: "Competição",
     date: "2026-10-29",
     start: "13:00",
@@ -56,7 +96,7 @@ export const activities: Activity[] = [
     mode: "Presencial",
     speaker: "Centro Acadêmico Alan Turing",
     description:
-      "A CSP é uma competição de programação organizada pelo Centro Acadêmico Alan Turing como parte da SEMINFO. Haverá uma prova de 7 problemas para cada categoria, Técnico e Graduação. Não é necessária experiência em programação competitiva.",
+      "A CSP é uma competição de programação organizada pelo Centro Acadêmico Alan Turing como parte da SEMINFO. Haverá uma prova de 7 problemas para cada categoria, Técnico e Graduação.",
     requirements: [
       {
         text: "Exclusiva para estudantes do IFSULDEMINAS Campus Muzambinho dos cursos Técnico em Informática Integrado ou Subsequente, ou Ciência da Computação.",
@@ -85,7 +125,7 @@ export const activities: Activity[] = [
     competitionSchedule: [
       { date: "2026-10-29", start: "13:00", end: "13:15", title: "Entrada e preparação nos laboratórios" },
       { date: "2026-10-29", start: "13:15", end: "15:30", title: "Prova" },
-      { date: "2026-10-29", start: "15:30", end: "16:00", title: "Deslocamento ao auditório e coffee break" },
+      { date: "2026-10-29", start: "15:30", end: "16:00", title: "Deslocamento ao Auditório H e coffee break" },
       { date: "2026-10-29", start: "16:00", end: "17:00", title: "Premiação da CSP e encerramento da SEMINFO" },
     ],
   },

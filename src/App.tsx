@@ -1,8 +1,9 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { activities, days, event, type Activity } from "./data";
+import { activities, days, event, activityTime, type Activity } from "./data";
 import "./App.css";
 import "./ActivityDetail.css";
 import "./AboutPage.css";
+import { MomentPreview, MomentDetails } from "./ActivityMoments";
 import { Hero, Waves } from "./Hero";
 import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
@@ -11,6 +12,7 @@ import academicCenterLogo from "./assets/LogoCA2.png";
 import caSeminfoPhoto from "./assets/Organizadores/CAseminfo.jpeg";
 
 const labels = {
+  unknown: "Inscrição a divulgar",
   open: "Inscrições abertas",
   closed: "Inscrições encerradas",
   full: "Vagas esgotadas",
@@ -275,21 +277,21 @@ function App() {
             (isActivities || a.date === day) &&
             (type === "Todas" || a.type === type) &&
             (!openOnly || (a.registrationStatus === "open" && !a.cancelled && (Boolean(registrationDestination(a.registrationUrl)) || Boolean(a.registrationDeadline)))) &&
-            normalize(`${a.title} ${a.speaker} ${a.location}`).includes(
+            normalize(`${a.title} ${a.speaker} ${a.location} ${(a.moments ?? []).map(m => `${m.title ?? ""} ${(m.speakers ?? []).map(s => s.name).join(" ")}`).join(" ")}`).includes(
               normalize(search),
             ),
         )
         .sort(
           (a, b) =>
-            a.date.localeCompare(b.date) || a.start.localeCompare(b.start),
+            a.date.localeCompare(b.date) || (a.start ?? "99:99").localeCompare(b.start ?? "99:99"),
         ),
     [day, type, openOnly, search, isActivities],
   );
   const isToday = event.phase === "live" && day === now.date && !isActivities;
-  const ended = isToday ? filtered.filter((a) => a.end <= now.time) : [];
+  const ended = isToday ? filtered.filter((a) => a.end && a.end <= now.time) : [];
   const visible =
-    isToday && !showEarlier && filtered.some((a) => a.end > now.time)
-      ? filtered.filter((a) => a.end > now.time)
+    isToday && !showEarlier && filtered.some((a) => (!a.end || a.end > now.time))
+      ? filtered.filter((a) => (!a.end || a.end > now.time))
       : filtered;
   const showUndisclosedSchedule =
     !isActivities && filtered.length === 0 && !search.trim() && type === "Todas" && !openOnly;
@@ -299,10 +301,10 @@ function App() {
   const types = [...new Set(activities.map((a) => a.type))];
   const selectedDay = days.find((d) => d.date === day);
   const temporal = (a: Activity) =>
-    event.phase === "live" && a.date === now.date && !a.cancelled
+    event.phase === "live" && a.date === now.date && !a.cancelled && a.start && a.end
       ? a.start <= now.time && a.end > now.time
         ? "Em andamento · conforme a programação"
-        : a.end <= now.time
+        : a.end && a.end <= now.time
           ? "Encerrada · conforme a programação"
           : ""
       : "";
@@ -476,7 +478,7 @@ function App() {
             <div className="detail-layout">
               <div className="detail-intro">
                 <div className="detail-type">
-                  <span>{detail.type}</span><span>{detail.mode}</span>
+                  <span>{detail.type}</span><span>{detail.mode || "Modalidade a divulgar"}</span>
                 </div>
                 <h1>{detail.title}</h1>
                 {detail.cancelled && (
@@ -488,8 +490,8 @@ function App() {
               </div>
                 <div className="detail-summary">
                   <div><DetailIcon kind="calendar" /><p>{dateLabel(detail.date)}<small>{new Intl.DateTimeFormat("pt-BR", { weekday: "long", timeZone: "America/Sao_Paulo" }).format(new Date(`${detail.date}T12:00:00-03:00`))}</small></p></div>
-                  <div><AgendaIcon /><p>{detail.start}–{detail.end}<small>Horário de Brasília</small></p></div>
-                  <div><AgendaIcon location /><p>{detail.location || "Local a divulgar"}<small>{detail.mode}</small></p></div>
+                  <div><AgendaIcon /><p>{activityTime(detail, true)}<small>Horário de Brasília</small></p></div>
+                  <div><AgendaIcon location /><p>{detail.location || "Local a divulgar"}<small>{detail.mode || "Modalidade a divulgar"}</small></p></div>
                 </div>
               <article className="detail-body">
                 <h2>Sobre a atividade</h2>
@@ -514,7 +516,8 @@ function App() {
                     </ol>
                   </section>
                 ) : null}
-                <h2>Quem conduz</h2>
+                {detail.moments?.length ? <MomentDetails moments={detail.moments} /> : null}
+                {!detail.moments?.length || detail.speaker ? <><h2>Quem conduz</h2>
                 <div className="detail-speakers">
                   {detail.speaker ? detail.speaker.split(/\s+e\s+|\s*;\s*/).map((speaker, index) => {
                     const [name, ...notes] = speaker.split("·");
@@ -524,6 +527,7 @@ function App() {
                     return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${isAcademicCenter ? "speaker-avatar-image" : ""}`} aria-hidden="true">{isAcademicCenter ? <img src={caSeminfoPhoto} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
                   }) : <p>Responsável a divulgar.</p>}
                 </div>
+                </> : null}
                 <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
                   <h2 id="requirements-title">Antes de participar</h2>
                   {detail.requirements.length ? (
@@ -557,6 +561,8 @@ function App() {
                 {actions(detail)}
                 {detail.registrationStatus === "none" ? (
                   <p className="registration-help">Esta atividade não exige inscrição.</p>
+                ) : detail.registrationStatus === "unknown" ? (
+                  <p className="registration-help">As orientações de participação serão divulgadas junto às informações da atividade.</p>
                 ) : !detail.registrationInstructions ? (
                   <p className="registration-help">A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário.</p>
                 ) : null}
@@ -712,7 +718,7 @@ function App() {
                       {filtered.length > 0 && ended.length === filtered.length
                         ? "A programação de hoje terminou."
                         : visible.some(
-                              (a) => a.start <= now.time && a.end > now.time,
+                              (a) => a.start && a.start <= now.time && (!a.end || a.end > now.time),
                             )
                           ? "Em andamento e próximos horários"
                           : "Próximos horários"}{" "}
@@ -764,7 +770,7 @@ function App() {
                   groups.map((group) => (
                     <div className="time-group" key={group}>
                       <div className="group-label">
-                        {isActivities ? dateLabel(group) : group}
+                        {isActivities ? dateLabel(group!) : group || "A divulgar"}
                       </div>
                       <div className="group-activities">
                         {visible
@@ -777,14 +783,22 @@ function App() {
                               className={`activity-row ${a.cancelled ? "cancelled" : ""}`}
                             >
                               <>
-                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span></div>
+                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span>{a.flag && <span className="activity-type category-cyan">{a.flag}</span>}</div>
                                 <h3><a href={`#/atividade/${a.id}`} onClick={openActivity}>{a.title}</a></h3>
                                 {a.subtitle && <p className="activity-subtitle">{a.subtitle}</p>}
                                 <div className="activity-meta">
-                                  <span><AgendaIcon />{a.start}–{a.end}</span>
-                                  <span><AgendaIcon location />{a.location}</span>
+                                  <span><AgendaIcon />{activityTime(a, true)}</span>
+                                  <span><AgendaIcon location />{a.location || "Local a divulgar"}</span>
                                 </div>
-                                <p className="activity-speaker">{a.speaker}</p>
+                                {a.speaker && <p className="activity-speaker">{a.speaker}</p>}
+                                {a.moments?.length ? <MomentPreview moments={a.moments} /> : a.competitionSchedule?.length ? (
+                                  <MomentPreview moments={a.competitionSchedule.map((stage, index) => ({
+                                    id: `stage-${index}`,
+                                    kind: "ceremony",
+                                    title: stage.title,
+                                    start: stage.start,
+                                  }))} />
+                                ) : null}
                                 {a.notice && <p className="row-notice">{a.notice}</p>}
                                 {temporal(a) && <p className="temporal">{temporal(a)}</p>}
                                 <div className="activity-bottom">
