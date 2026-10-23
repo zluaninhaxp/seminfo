@@ -47,6 +47,11 @@ export interface Activity {
   notice?: string;
 }
 
+export function hasParticipationRequirement(requirement: Activity["requirements"][number]) {
+  const text = (typeof requirement === "string" ? requirement : requirement.text).trim();
+  return text.length > 0 && !/^(?:nenhum|nenhuma|não|nao)[.!]?$/i.test(text);
+}
+
 export const event: {
   phase: "registration" | "live" | "finished";
   demo: boolean;
@@ -65,23 +70,236 @@ export const days = [
 // Atividades reais divulgadas para a XXI SEMINFO 2026.
 export const activities: Activity[] = [
   {
-    id: "abertura",
-    title: "Abertura Oficial - XXI SEMINFO 2026",
-    type: "Abertura",
-    date: "2026-10-26",
-    start: "13:00",
-    location: "Auditório Novo",
-    mode: "Presencial",
-    speaker: "",
-    description: "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
-    requirements: [],
-    registrationStatus: "unknown",
-    moments: [
-      { id: "cerimonia", kind: "ceremony", start: "13:00", title: "Credenciamento e cerimônia de abertura" },
-      { id: "palestra-1", kind: "talk", start: "14:00", speakers: [{ name: "Renato" }] },
-      { id: "palestra-2", kind: "talk", start: "15:00", speakers: [{ name: "Douglas" }] },
-      { id: "coffee-break", kind: "break", start: "16:00", title: "Coffee break" },
+    "id": "abertura",
+    "title": "Abertura Oficial - XXI SEMINFO 2026",
+    "type": "Abertura",
+    "date": "2026-10-26",
+    "start": "13:00",
+    "location": "Auditório Novo",
+    "mode": "Presencial",
+    "speaker": "Centro Acadêmico Alan Turing",
+    "description": "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
+    "requirements": [],
+    "registrationStatus": "soon",
+    "registrationUrl": "https://docs.google.com/forms/d/1gD2e10L3Zx4cL56TkEIkpgnaP7uX6Qfo1PnAsGYg5fs/edit",
+    "moments": [
+      {
+        "id": "cerimonia",
+        "kind": "ceremony",
+        "start": "13:00",
+        "title": "Credenciamento e Cerimônia de abertura."
+      },
+      {
+        "id": "palestra-1",
+        "kind": "talk",
+        "title": "Inteligência Artificial e Inovação: muito além de um prompt e um conjunto de dados",
+        "start": "14:00",
+        "description": "Palestra sobre a aplicação da Inteligência Artificial na resolução de problemas reais, explorando como a tecnologia pode contribuir para a modelagem de soluções e o desenvolvimento de uma visão estratégica.\n\nA atividade abordará as expectativas e discussões em torno da popularização da IA, além de apresentar como algoritmos e modelos podem auxiliar na construção de sistemas confiáveis.\n\nTambém serão discutidos aspectos relacionados à ética e ao uso consciente de ferramentas de Inteligência Artificial Generativa.",
+        "speakers": [
+          {
+            "name": "Prof. Dr. Douglas Donizeti de Castilho Braz"
+          }
+        ],
+        "requirements": [
+          "Nenhum."
+        ]
+      },
+      {
+        "id": "coffee-break",
+        "kind": "break",
+        "start": "16:00",
+        "title": "Coffee break"
+      }
     ],
+    "end": "17:00",
+    "capacity": null
+  },
+  {
+    "id": "troubleshooting-dados-mundo-real",
+    "title": "Troubleshooting e Dados no Mundo Real",
+    "type": "Palestra",
+    "date": "2026-10-26",
+    "location": "Online",
+    "speaker": "Ana Carolina Brazão",
+    "description": "Palestra sobre a importância da investigação orientada por dados na identificação e resolução de problemas em operações de e-commerce de alcance global.\n\nA atividade abordará como a análise de informações pode contribuir para o diagnóstico de falhas, a estabilidade dos sistemas e a continuidade das operações em ambientes digitais complexos.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://forms.gle/1DgMW8A67AYL9XGd7",
+    "start": "19:30",
+    "mode": "Online",
+    "capacity": null
+  },
+  {
+    "id": "criacao-jogos-2d-tarde",
+    "title": "Criação de Jogos 2D",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 14",
+    "speaker": "Ricardo Martins",
+    "description": "Oficina prática de desenvolvimento de jogos 2D utilizando o GameMaker, com foco nos fundamentos da lógica de programação aplicada à criação de jogos.\n\nA atividade abordará o desenvolvimento de mecânicas, personagens e fases, permitindo aos participantes aplicar os conhecimentos adquiridos na construção da primeira fase de um jogo.",
+    "requirements": [
+      "Atividade destinada a iniciantes e interessados em desenvolvimento de jogos, sem exigência de conhecimento prévio."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1RBZLZRULRV9Tm9ca-IF4jo9-XfqDPDEYW0QXZF2Osj8/edit",
+    "start": "13:00",
+    "capacity": 30,
+    "mode": "Presencial"
+  },
+  {
+    "id": "criacao-jogos-2d-noite",
+    "title": "Criação de Jogos 2D",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 14",
+    "speaker": "Ricardo Martins",
+    "description": "Oficina prática de desenvolvimento de jogos 2D utilizando o GameMaker, com foco nos fundamentos da lógica de programação aplicada à criação de jogos.\n\nA atividade abordará o desenvolvimento de mecânicas, personagens e fases, permitindo aos participantes aplicar os conhecimentos adquiridos na construção da primeira fase de um jogo.",
+    "requirements": [
+      "Atividade destinada a iniciantes e interessados em desenvolvimento de jogos, sem exigência de conhecimento prévio."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1_5SDFy4fo9_Z4VHRGknl9Zk3cKdSpo--qmBGiA3LbGU/edit",
+    "start": "19:00",
+    "capacity": 30,
+    "mode": "Presencial"
+  },
+  {
+    "id": "pipeline-dados-tempo-real",
+    "title": "Pipeline de Dados em Tempo Real: Do Zero ao Dashboard",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 16",
+    "speaker": "Tiago Fernandes Moraes",
+    "description": "Oficina prática sobre a construção de pipelines de processamento de dados em tempo real, utilizando Python para gerenciar fluxos de eventos e visualizar métricas continuamente.\n\nA partir de um cenário de e-commerce, os participantes irão simular transações de vendas, estruturar um fluxo de mensageria assíncrona com Python e desenvolver um dashboard interativo utilizando Streamlit e Plotly.\n\nA atividade abordará conceitos fundamentais de processamento de dados em fluxo (streaming), agregação de informações em tempo real e criação de painéis dinâmicos para apoiar a tomada de decisões.",
+    "requirements": [
+      "Conhecimentos básicos em lógica de programação e Python, incluindo estruturas condicionais, laços de repetição e funções simples."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://forms.gle/cqNfxjiGQfii2BjQ8",
+    "start": "13:00",
+    "capacity": 30,
+    "subtitle": "Construindo arquiteturas de streaming de dados com Python, WebSockets e Streamlit",
+    "mode": "Presencial"
+  },
+  {
+    "id": "introducao-blender-3d",
+    "title": "Introdução: Blender 3D",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 15",
+    "speaker": "Caio Henrique de Almeida Magalhães",
+    "description": "Oficina prática de introdução ao Blender, abordando as principais etapas do processo de criação de cenas tridimensionais.\n\nA atividade apresentará os conceitos básicos de modelagem e topologia, além de técnicas de iluminação, criação de materiais e renderização, acompanhando o processo criativo desde a construção dos objetos até a finalização da cena.",
+    "requirements": [
+      "São necessários apenas conhecimentos básicos de informática e familiaridade com o uso cotidiano do computador."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1Gi6L9zhuS_QC1WfdggJ9DKFh7JheOIkuAPJS3CAZROQ/edit",
+    "start": "13:00",
+    "capacity": 20,
+    "mode": "Presencial"
+  },
+  {
+    "id": "ia-pc-ollama",
+    "title": "Rodando Inteligência Artificial no seu PC com Ollama",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 5 (Laboratório de redes).",
+    "speaker": "Gabriel Darosa",
+    "description": "Oficina prática sobre a execução local de modelos de Inteligência Artificial utilizando o Ollama, ferramenta que permite rodar Grandes Modelos de Linguagem (Large Language Models - LLMs) diretamente no computador, de forma gratuita e sem depender de conexão com a internet durante sua utilização.\n\nA atividade abordará a instalação e execução de modelos de IA, permitindo aos participantes experimentar diferentes modelos, aprender a elaborar comandos eficientes e explorar possibilidades de integração dessa tecnologia em projetos de desenvolvimento.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "soon",
+    "registrationUrl": "https://docs.google.com/forms/d/1pxsvR0WlyH3QXcUUYTAhFMTd-FnbsfwekesEED9IxcU/edit",
+    "start": "13:00",
+    "capacity": 15,
+    "mode": "Presencial"
+  },
+  {
+    "id": "ia-imagens-videos-gemini",
+    "title": "IA Além do Chat: Guia Prático para Geração de Imagens e Vídeos com o Gemini",
+    "type": "Oficina",
+    "date": "2026-10-27",
+    "location": "Sala 13",
+    "speaker": "Rafaela Alves Magalhães e Felipe Antony Baquião Avelar",
+    "description": "Oficina prática sobre o uso do Google Gemini, explorando funcionalidades de Inteligência Artificial que vão além da geração de textos.\n\nA atividade abordará técnicas de estruturação de prompts para geração de imagens e vídeos, além da utilização do Gemini Live para interação por voz com a IA e identificação de erros em códigos em tempo real.\n\nAo final, será realizado um mini-hackathon de prompts, no qual os participantes poderão colocar em prática os conhecimentos adquiridos durante a oficina.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/16O4ErOSmYY9X0y0xGdKZ0w9p2WNStUAWb_CF65OuMjs/edit",
+    "start": "13:00",
+    "capacity": 30,
+    "mode": "Presencial"
+  },
+  {
+    "id": "acervo-abreu",
+    "title": "Acervo Brasileiro de Referências sobre Eugenia (ABREU): o uso de ferramentas Google na construção de uma plataforma de divulgação científica",
+    "type": "Palestra",
+    "date": "2026-10-27",
+    "location": "Auditório H",
+    "speaker": "Prof. Dr. Guilherme Prado Roitberg (Coordenador), Alisson Gabriel Reis Carmo (bolsista), Nicoly Elisa de Oliveira Souza (bolsista).",
+    "description": "Apresentação do projeto de extensão com interface em pesquisa Acervo Brasileiro de Referências sobre Eugenia, uma Plataforma Digital Educacional desenvolvida com ferramentas gratuitas do Google, como Google Sites, Google Docs, Google Meet, Google Analytics e Google Search Console.\n\nA palestra abordará a estrutura e o funcionamento do projeto, demonstrando como ferramentas digitais acessíveis podem ser utilizadas de forma integrada em iniciativas educacionais e de pesquisa.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1g-uG-5jHRtSXm7hW5R3ynBVkuCTrKtjnW3heKfz3es8/edit",
+    "mode": "Presencial",
+    "start": "13:30"
+  },
+  {
+    "id": "seguranca-informacao-pratica",
+    "title": "Segurança da Informação na Prática: Aprenda, Identifique e Proteja-se",
+    "type": "Oficina",
+    "date": "2026-10-28",
+    "location": "Sala 15",
+    "speaker": "Rafaela Alves Magalhães e Nycollas Icrad Luz Machado",
+    "description": "Oficina introdutória sobre Segurança da Informação e Cibersegurança, abordando conceitos fundamentais relacionados a ameaças digitais, engenharia social, golpes virtuais e medidas de proteção aplicáveis ao cotidiano.\n\nApós a apresentação teórica, será realizada uma atividade gamificada, na qual os participantes poderão testar seus conhecimentos e analisar situações práticas, aprendendo de forma interativa a reconhecer riscos e adotar comportamentos mais seguros no ambiente digital.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1wSyqdk-CWLhizEJI9YkkikDkHkyWoZ6ZfmsCLIZvuQs/edit",
+    "start": "13:00",
+    "capacity": 30,
+    "mode": "Presencial"
+  },
+  {
+    "id": "computacao-quantica",
+    "title": "Computação Quântica: Entendendo o contexto para inovar no futuro",
+    "type": "Palestra",
+    "date": "2026-10-28",
+    "location": "Online",
+    "speaker": "Daniele Tavares",
+    "description": "Palestra introdutória sobre os fundamentos da Computação Quântica e suas relações com a Ciência da Computação, explorando as novas possibilidades dessa tecnologia para a resolução de problemas específicos.\n\nA atividade abordará os conhecimentos e as habilidades necessários para que profissionais da computação possam atuar no desenvolvimento de tecnologias quânticas, incluindo projeto de algoritmos, desenvolvimento de compiladores, ferramentas de software e arquiteturas de hardware.\n\nTambém serão discutidas as conexões entre a computação quântica, a Engenharia de Software e as infraestruturas de comunicação, destacando os desafios envolvidos na integração entre sistemas clássicos e quânticos.",
+    "requirements": [
+      "não"
+    ],
+    "registrationStatus": "open",
+    "registrationUrl": "https://docs.google.com/forms/d/1_RzlNsniwp_NryGGu1F5uHOGSLvEYvg_xn4BEXnnNgI/edit",
+    "start": "19:30",
+    "mode": "Online",
+    "capacity": null
+  },
+  {
+    "id": "futuro-engenharia-software-ia",
+    "title": "Ainda precisamos aprender a programar? O futuro da Engenharia de Software na era da Inteligência Artificial",
+    "type": "Palestra",
+    "date": "2026-10-29",
+    "location": "Online",
+    "speaker": "Johnatan Alves de Oliveira",
+    "description": "Palestra sobre as transformações no desenvolvimento de software com o avanço da Inteligência Artificial, abordando a evolução das ferramentas capazes de analisar projetos completos, executar testes e implementar funcionalidades.\n\nConduzida pelo Prof. Johnatan Oliveira, da Universidade Federal de Lavras (UFLA), a atividade apresentará, com base em estudos recentes, uma comparação entre o desenvolvimento de software antes e depois da popularização da IA. Serão discutidos o paradoxo da produtividade, os impactos na qualidade e segurança do código e os riscos de perda de habilidades técnicas decorrentes da dependência dessas ferramentas.\n\nA palestra também abordará as mudanças no mercado de trabalho e os desafios para o ensino de Engenharia de Software, incluindo as dificuldades de ingresso para profissionais iniciantes, as transformações nas carreiras e os questionamentos sobre o ensino e a avaliação de conteúdos como programação, requisitos e UML na era da IA.",
+    "requirements": [
+      "Nenhum."
+    ],
+    "registrationStatus": "soon",
+    "registrationUrl": "https://docs.google.com/forms/d/14Uf2m_mLeZJSDjX7vgwkiriY5hKbDD9EKuS2EUNM8_Q/edit",
+    "start": "19:30",
+    "mode": "Online",
+    "capacity": null
   },
   {
     id: "desafio-programacao",

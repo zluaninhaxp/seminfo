@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { activities, days, event, activityTime, type Activity } from "./data";
+import { activities as initialActivities, days, event, activityTime, hasParticipationRequirement, type Activity } from "./data";
 import "./App.css";
 import "./ActivityDetail.css";
 import "./AboutPage.css";
@@ -9,7 +9,7 @@ import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
-import caSeminfoPhoto from "./assets/Organizadores/CAseminfo.jpeg";
+import { speakerPhoto } from "./speakerPhotos";
 
 const labels = {
   unknown: "Inscrição a divulgar",
@@ -95,7 +95,7 @@ const cspPromoStorageKey = "seminfo-csp-promo-dismissed-v1";
 function shouldShowCspPromo() {
   const today = clock().date;
   if (today < "2026-10-06" || today > "2026-10-23") return false;
-  if (!activities.some((activity) => activity.id === "desafio-programacao")) return false;
+  if (!initialActivities.some((activity) => activity.id === "desafio-programacao")) return false;
   try {
     return window.sessionStorage.getItem(cspPromoStorageKey) !== "dismissed";
   } catch {
@@ -116,6 +116,54 @@ const normalize = (value: string) =>
     .toLowerCase();
 
 function App() {
+  const [registrationStatuses, setRegistrationStatuses] = useState<Record<string, Activity["registrationStatus"]>>({});
+  const activities = useMemo(() => initialActivities.map(activity => {
+    const status = registrationStatuses[activity.id];
+    return status && activity.id !== "desafio-programacao"
+      ? { ...activity, registrationStatus: status }
+      : activity;
+  }), [registrationStatuses]);
+  useEffect(() => {
+    let active = true;
+    let checking = false;
+    const controller = new AbortController();
+    const refresh = async () => {
+      if (checking || document.visibilityState === "hidden") return;
+      checking = true;
+      try {
+        const response = await fetch('/api/registration-status', { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) throw new Error('Registration check failed');
+        const values: unknown = await response.json();
+        if (!values || typeof values !== 'object' || Array.isArray(values)) throw new Error('Invalid registration status');
+        const statuses: Record<string, Activity["registrationStatus"]> = {};
+        for (const activity of initialActivities) {
+          if (activity.id === 'desafio-programacao' || !activity.registrationUrl) continue;
+          const value = (values as Record<string, unknown>)[activity.id];
+          statuses[activity.id] = value === 'open' || value === 'soon' || value === 'closed' || value === 'unknown'
+            ? value : 'unknown';
+        }
+        if (active) setRegistrationStatuses(statuses);
+      } catch {
+        if (active) setRegistrationStatuses(Object.fromEntries(initialActivities
+          .filter(activity => activity.id !== 'desafio-programacao' && activity.registrationUrl)
+          .map(activity => [activity.id, 'unknown'])));
+      } finally {
+        checking = false;
+      }
+    };
+    void refresh();
+    const timer = window.setInterval(() => { void refresh(); }, 60_000);
+    const onVisible = () => { void refresh(); };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      active = false;
+      controller.abort();
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, []);
   const [route, setRoute] = useState(readRoute);
   const [day, setDay] = useState(() => {
     const onlyActivity = activities.length === 1 ? activities[0] : undefined;
@@ -285,7 +333,7 @@ function App() {
           (a, b) =>
             a.date.localeCompare(b.date) || (a.start ?? "99:99").localeCompare(b.start ?? "99:99"),
         ),
-    [day, type, openOnly, search, isActivities],
+    [activities, day, type, openOnly, search, isActivities],
   );
   const isToday = event.phase === "live" && day === now.date && !isActivities;
   const ended = isToday ? filtered.filter((a) => a.end && a.end <= now.time) : [];
@@ -478,7 +526,7 @@ function App() {
             <div className="detail-layout">
               <div className="detail-intro">
                 <div className="detail-type">
-                  <span>{detail.type}</span><span>{detail.mode || "Modalidade a divulgar"}</span>
+                  <span>{detail.type}</span><span className={detail.mode ? `activity-mode-${detail.mode.toLowerCase()}` : undefined}>{detail.mode || "Modalidade a divulgar"}</span>
                 </div>
                 <h1>{detail.title}</h1>
                 {detail.cancelled && (
@@ -495,7 +543,7 @@ function App() {
                 </div>
               <article className="detail-body">
                 <h2>Sobre a atividade</h2>
-                <p>{detail.description}</p>
+                <div className="activity-description">{detail.description.split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
                 {detail.competitionSchedule?.length ? (
                   <section className="competition-schedule" aria-labelledby="competition-schedule-title">
                     <h2 id="competition-schedule-title">Cronograma da competição</h2>
@@ -510,7 +558,7 @@ function App() {
                             ) : <span>Horário a divulgar</span>}
                             <small>{dateLabel(stage.date)}</small>
                           </div>
-                          <h3>{stage.title}</h3>
+                          <h3>{stage.title === "Prova" ? <strong>{stage.title}</strong> : stage.title}</h3>
                         </li>
                       ))}
                     </ol>
@@ -523,23 +571,19 @@ function App() {
                     const [name, ...notes] = speaker.split("·");
                     const words = name.trim().split(/\s+/);
                     const initials = [words[0]?.[0], words.length > 1 ? words[words.length - 1]?.[0] : ""].join("").toUpperCase();
-                    const isAcademicCenter = name.trim() === "Centro Acadêmico Alan Turing";
-                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${isAcademicCenter ? "speaker-avatar-image" : ""}`} aria-hidden="true">{isAcademicCenter ? <img src={caSeminfoPhoto} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
+                    const photo = speakerPhoto(name);
+                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${photo ? "speaker-avatar-image" : ""}`} aria-hidden="true">{photo ? <img src={photo} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
                   }) : <p>Responsável a divulgar.</p>}
                 </div>
                 </> : null}
-                <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
+                {detail.requirements.some(hasParticipationRequirement) && <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
                   <h2 id="requirements-title">Antes de participar</h2>
-                  {detail.requirements.length ? (
                     <ul>
-                      {detail.requirements.map((r) => (
+                      {detail.requirements.filter(hasParticipationRequirement).map((r) => (
                         <li key={typeof r === "string" ? r : r.text}>{renderRequirement(r)}</li>
                       ))}
                     </ul>
-                  ) : (
-                    <p>Não há requisitos informados.</p>
-                  )}
-                </section>
+                </section>}
               </article>
               <aside className="participation">
                 <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && (registrationDestination(detail.registrationUrl) || detail.registrationDeadline) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
@@ -783,7 +827,7 @@ function App() {
                               className={`activity-row ${a.cancelled ? "cancelled" : ""}`}
                             >
                               <>
-                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span>{a.flag && <span className="activity-type category-cyan">{a.flag}</span>}</div>
+                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span>{a.mode && <span className={`activity-type activity-mode-${a.mode.toLowerCase()}`}>{a.mode}</span>}{a.flag && <span className="activity-type category-cyan">{a.flag}</span>}</div>
                                 <h3><a href={`#/atividade/${a.id}`} onClick={openActivity}>{a.title}</a></h3>
                                 {a.subtitle && <p className="activity-subtitle">{a.subtitle}</p>}
                                 <div className="activity-meta">
@@ -797,6 +841,7 @@ function App() {
                                     kind: "ceremony",
                                     title: stage.title,
                                     start: stage.start,
+                                    end: stage.title === "Prova" ? stage.end : undefined,
                                   }))} />
                                 ) : null}
                                 {a.notice && <p className="row-notice">{a.notice}</p>}

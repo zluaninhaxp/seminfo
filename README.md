@@ -37,7 +37,7 @@ O site usa navegação interna por hash e não depende de um serviço de roteame
 
 ## Atualizar a programação
 
-Edite [`src/data.ts`](src/data.ts). O arquivo contém as fases do evento, os dias e a lista de atividades. Atualmente, a única atividade publicada é a **1ª CSP — Competição SEMINFO de Programação**.
+Edite [`src/data.ts`](src/data.ts). O arquivo contém as fases do evento, os dias e a lista de atividades. A programação contém 13 registros, incluindo a abertura com sua palestra integrada, as duas sessões de Jogos 2D e a CSP.
 
 Cada atividade tem um `id` estável, usado na rota de detalhes. Os campos principais são:
 
@@ -105,8 +105,18 @@ Os logos e materiais oficiais ficam em `src/assets/`. Preserve a proporção e a
 
 Horários gerais também podem estar ausentes; nesse caso a interface informa que serão divulgados e não atribui um estado de andamento. `registrationStatus: "unknown"` indica que as regras de inscrição não foram fornecidas.
 
-**Abertura (26/10), informações recebidas:** presencial, no Auditório Novo, a partir das 13h00. Credenciamento e cerimônia às 13h00, palestra de Renato às 14h00, palestra de Douglas às 15h00 e coffee break às 16h00.
+**Abertura (26/10):** presencial, no Auditório Novo, das 13h00 às 17h00, conduzida pelo Centro Acadêmico Alan Turing. Credenciamento e cerimônia às 13h00, palestra de Prof. Dr. Douglas Donizeti de Castilho Braz às 14h00 e coffee break às 16h00. Conforme confirmação da organização, Renato não participará.
 
-**Conteúdo ainda pendente:** títulos e descrições das palestras, nomes completos e demais dados dos palestrantes, horário de encerramento, requisitos, capacidade e regras/links de participação. Não deduzir o fim de cada momento pelo início do seguinte. Nenhum horário de encerramento ou formulário foi criado para preencher essas lacunas.
+Os títulos, descrições, responsáveis, requisitos e formulários foram cadastrados a partir de `Cadastro Centralizado SEMINFO 2026.md`, preservando os parágrafos das descrições. Conforme atualização da organização, a palestra de ABREU começa às 13h30, a abertura e todas as atividades online têm vagas ilimitadas. As oficinas diurnas começam a partir das 13h00; a sessão noturna de Jogos 2D começa a partir das 19h00, sem horário de encerramento. Todas as atividades identificam sua modalidade. A oficina de Segurança da Informação está confirmada na Sala 15. Vagas presenciais não informadas continuam ausentes. Requisitos vazios ou que indiquem ausência de exigências não exibem a seção “Antes de participar”. As fotografias fornecidas são associadas aos responsáveis por `src/speakerPhotos.ts` e exibidas nos avatares existentes, incluindo Douglas no bloco da palestra de abertura e o Centro Acadêmico na condução da abertura e da CSP. ABREU utiliza a fotografia conjunta indicada no documento. Os arquivos de imagem originais foram preservados.
+
+### Verificação automática das inscrições
+
+As atividades cadastradas pelo documento consultam `/api/registration-status` ao abrir o site, ao retornar à aba e a cada minuto enquanto ela estiver visível. O servidor consulta as páginas de resposta do Google Forms sem login e mantém um cache de um minuto. Um formulário público com envio disponível indica inscrições abertas; acesso restrito ou formulário indisponível indica inscrições em breve; coleta explicitamente encerrada indica inscrições encerradas. Erros de rede e respostas não reconhecidas deixam a situação desconhecida. A CSP mantém seus dados e sua situação original, sem consulta automática.
+
+Os links originais permanecem intactos em `src/data.ts`. Somente a consulta técnica troca `/edit` por `/viewform`. Nenhuma resposta é enviada aos formulários. Essa consulta depende do HTML público do Google Forms; mudanças nessa página podem exigir ajuste do verificador.
+
+`api/registration-status.ts` é uma função Node.js para a hospedagem na Vercel. O Vite oferece o mesmo endpoint no desenvolvimento e no preview local. Uma hospedagem que sirva apenas arquivos estáticos precisa disponibilizar esse endpoint para manter a atualização automática. Não são necessárias credenciais nem dependências adicionais.
+
+Para testar a classificação de formulários públicos, restritos, encerrados, redirecionamentos e falhas de rede, execute `node --experimental-strip-types scripts/verify-registration.mjs` com Node.js 22.12 ou superior.
 
 Validação no navegador: com o servidor local na porta 5174, execute `node scripts/verify-composite.cjs` (Playwright e Chrome necessários; `PLAYWRIGHT_MODULE` permite indicar uma instalação externa). As massas de teste são injetadas apenas nas respostas do navegador e não alteram os dados publicados.

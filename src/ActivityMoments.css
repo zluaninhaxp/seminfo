@@ -7,7 +7,7 @@
 .moment-time { color: var(--cyan); font-size: 14px; font-variant-numeric: tabular-nums; line-height: 1.6; }
 .moment-preview p { margin: 0; overflow-wrap: anywhere; }
 .moment-preview .moment-title { display: inline; color: var(--muted); font-size: 14px; line-height: 1.5; }
-.moment-preview-talk .moment-title { color: var(--text); font-size: 16px; font-weight: 600; }
+.moment-preview-talk .moment-title, .moment-preview-prova .moment-title { color: var(--text); font-size: 16px; font-weight: 600; }
 .moment-preview .moment-names { display: inline; color: var(--muted); font-size: 14px; line-height: 1.6; }
 .moment-schedule ol, .moment-speakers { list-style: none; padding: 0; }
 .moment-schedule h3 { font-size: 16px; color: var(--muted); font-weight: 400; }

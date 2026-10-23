@@ -24,6 +24,8 @@
 .detail-page .detail-body h2 { font-size: 25px; margin: 26px 0 10px; }
 .detail-body h2::before { content: ""; display: block; width: 22px; height: 3px; background: var(--pink); margin-bottom: 8px; }
 .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 17px; line-height: 1.65; }
+.activity-description p { font-size: 17px; line-height: 1.65; white-space: pre-line; }
+.activity-description p + p { margin-top: 18px; }
 .competition-schedule { margin-top: 28px; }
 .detail-page .competition-schedule h2 { margin-top: 0; }
 .competition-schedule ol { display: grid; gap: 15px; margin: 16px 0 0; padding: 0; list-style: none; }
@@ -74,7 +76,7 @@
   .detail-page .participation { margin-top: 0; padding: 28px 0; border-left: 0; border-bottom: 1px solid var(--line); }
   .detail-intro h1 { font-size: clamp(32px, 7vw, 48px); }
   .detail-decoration { width: 100%; opacity: .14; }
-  .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 16px; }
+  .detail-page .detail-body > p, .detail-page .detail-body li, .activity-description p { font-size: 16px; }
   .competition-schedule li { grid-template-columns: minmax(92px, auto) minmax(0, 1fr); gap: 14px; }
   .competition-schedule-time { font-size: 15px; }
   .competition-schedule h3 { font-size: 16px; }
