@@ -81,7 +81,7 @@ export const activities: Activity[] = [
     "description": "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
     "requirements": [],
     "registrationStatus": "soon",
-    "registrationUrl": "https://docs.google.com/forms/d/1gD2e10L3Zx4cL56TkEIkpgnaP7uX6Qfo1PnAsGYg5fs/edit",
+    "registrationUrl": "https://forms.gle/zQFW72vRCJJWeWwH6",
     "moments": [
       {
         "id": "cerimonia",
@@ -126,7 +126,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://forms.gle/1DgMW8A67AYL9XGd7",
+    "registrationUrl": "https://forms.gle/vDC8LMxd45UBkJqV7",
     "start": "19:30",
     "mode": "Online",
     "capacity": null
@@ -143,7 +143,7 @@ export const activities: Activity[] = [
       "Atividade destinada a iniciantes e interessados em desenvolvimento de jogos, sem exigência de conhecimento prévio."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1RBZLZRULRV9Tm9ca-IF4jo9-XfqDPDEYW0QXZF2Osj8/edit",
+    "registrationUrl": "https://forms.gle/J8BbxKKZanb6PNrXA",
     "start": "13:00",
     "capacity": 30,
     "mode": "Presencial"
@@ -160,7 +160,7 @@ export const activities: Activity[] = [
       "Atividade destinada a iniciantes e interessados em desenvolvimento de jogos, sem exigência de conhecimento prévio."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1_5SDFy4fo9_Z4VHRGknl9Zk3cKdSpo--qmBGiA3LbGU/edit",
+    "registrationUrl": "https://forms.gle/JLT1qqLAFPNuwmUy6",
     "start": "19:00",
     "capacity": 30,
     "mode": "Presencial"
@@ -195,7 +195,7 @@ export const activities: Activity[] = [
       "São necessários apenas conhecimentos básicos de informática e familiaridade com o uso cotidiano do computador."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1Gi6L9zhuS_QC1WfdggJ9DKFh7JheOIkuAPJS3CAZROQ/edit",
+    "registrationUrl": "https://forms.gle/6zfxeRuSGv3qx5Db9",
     "start": "13:00",
     "capacity": 20,
     "mode": "Presencial"
@@ -212,7 +212,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "soon",
-    "registrationUrl": "https://docs.google.com/forms/d/1pxsvR0WlyH3QXcUUYTAhFMTd-FnbsfwekesEED9IxcU/edit",
+    "registrationUrl": "https://forms.gle/WrSY8bjHdyVj4Cwo8",
     "start": "13:00",
     "capacity": 15,
     "mode": "Presencial"
@@ -229,7 +229,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/16O4ErOSmYY9X0y0xGdKZ0w9p2WNStUAWb_CF65OuMjs/edit",
+    "registrationUrl": "https://forms.gle/nA26oDZ34o2TLcL57",
     "start": "13:00",
     "capacity": 30,
     "mode": "Presencial"
@@ -246,7 +246,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1g-uG-5jHRtSXm7hW5R3ynBVkuCTrKtjnW3heKfz3es8/edit",
+    "registrationUrl": "https://forms.gle/W5Encex3PbXMNz9N7",
     "mode": "Presencial",
     "start": "13:30"
   },
@@ -262,7 +262,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1wSyqdk-CWLhizEJI9YkkikDkHkyWoZ6ZfmsCLIZvuQs/edit",
+    "registrationUrl": "https://forms.gle/znUXSJ36U5Ejm1HL9",
     "start": "13:00",
     "capacity": 30,
     "mode": "Presencial"
@@ -279,7 +279,7 @@ export const activities: Activity[] = [
       "não"
     ],
     "registrationStatus": "open",
-    "registrationUrl": "https://docs.google.com/forms/d/1_RzlNsniwp_NryGGu1F5uHOGSLvEYvg_xn4BEXnnNgI/edit",
+    "registrationUrl": "https://forms.gle/tHazG5a34BtcZMrD6",
     "start": "19:30",
     "mode": "Online",
     "capacity": null
@@ -296,7 +296,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "soon",
-    "registrationUrl": "https://docs.google.com/forms/d/14Uf2m_mLeZJSDjX7vgwkiriY5hKbDD9EKuS2EUNM8_Q/edit",
+    "registrationUrl": "https://forms.gle/nUNMxjPwkrkSie9J9",
     "start": "19:30",
     "mode": "Online",
     "capacity": null
@@ -334,12 +334,12 @@ export const activities: Activity[] = [
       },
     ],
     capacity: "limited",
-    registrationStatus: "open",
+    registrationStatus: "closed",
     registrationDeadline: "23/10",
     registrationUrl:
       "https://docs.google.com/forms/d/e/1FAIpQLSff7YKqdC8fUq1C8KE62aiX6vGsb_95-Q0P2dWu6BPmXj0Lxw/viewform?usp=dialog",
     registrationInstructions:
-      "Inscrição gratuita por equipe até 23/10.",
+      "Inscrições encerradas em 23/10.",
     competitionSchedule: [
       { date: "2026-10-29", start: "13:00", end: "13:15", title: "Entrada e preparação nos laboratórios" },
       { date: "2026-10-29", start: "13:15", end: "15:30", title: "Prova" },

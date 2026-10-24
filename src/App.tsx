@@ -1,4 +1,6 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { isActivityPublished, nextActivityPublication } from "./activityPublication";
+import { registrationReleaseAt, registrationReleaseNotice, scheduledRegistration } from "./registrationRelease";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { activities as initialActivities, days, event, activityTime, hasParticipationRequirement, type Activity } from "./data";
 import "./App.css";
 import "./ActivityDetail.css";
@@ -91,24 +93,6 @@ function clock() {
   };
 }
 const readRoute = () => window.location.hash.slice(1) || "/programacao";
-const cspPromoStorageKey = "seminfo-csp-promo-dismissed-v1";
-function shouldShowCspPromo() {
-  const today = clock().date;
-  if (today < "2026-10-06" || today > "2026-10-23") return false;
-  if (!initialActivities.some((activity) => activity.id === "desafio-programacao")) return false;
-  try {
-    return window.sessionStorage.getItem(cspPromoStorageKey) !== "dismissed";
-  } catch {
-    return true;
-  }
-}
-function rememberCspPromoDismissal() {
-  try {
-    window.sessionStorage.setItem(cspPromoStorageKey, "dismissed");
-  } catch {
-    // The modal still closes for the current visit if storage is unavailable.
-  }
-}
 const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -116,13 +100,40 @@ const normalize = (value: string) =>
     .toLowerCase();
 
 function App() {
+  const [publicationNow, setPublicationNow] = useState(Date.now);
+  useEffect(() => {
+    const update = () => setPublicationNow(Date.now());
+    const next = nextActivityPublication(publicationNow);
+    const timer = next === undefined ? undefined : window.setTimeout(update, Math.min(Math.max(0, next - Date.now()), 2_147_483_647));
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [publicationNow]);
+  const [registrationsReleased, setRegistrationsReleased] = useState(() => Date.now() >= registrationReleaseAt);
+  useEffect(() => {
+    const update = () => setRegistrationsReleased(Date.now() >= registrationReleaseAt);
+    const remaining = registrationReleaseAt - Date.now();
+    const timer = remaining > 0 ? window.setTimeout(update, Math.min(remaining, 2_147_483_647)) : undefined;
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [registrationsReleased]);
   const [registrationStatuses, setRegistrationStatuses] = useState<Record<string, Activity["registrationStatus"]>>({});
-  const activities = useMemo(() => initialActivities.map(activity => {
+  const activities = useMemo(() => initialActivities.filter(activity => isActivityPublished(activity, publicationNow)).map(activity => {
     const status = registrationStatuses[activity.id];
-    return status && activity.id !== "desafio-programacao"
+    const current = status && activity.id !== "desafio-programacao"
       ? { ...activity, registrationStatus: status }
       : activity;
-  }), [registrationStatuses]);
+    return scheduledRegistration(current, registrationsReleased);
+  }), [registrationStatuses, registrationsReleased, publicationNow]);
   useEffect(() => {
     let active = true;
     let checking = false;
@@ -181,9 +192,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [now, setNow] = useState(clock);
   const [shareMessage, setShareMessage] = useState("");
-  const [cspPromoOpen, setCspPromoOpen] = useState(shouldShowCspPromo);
   const main = useRef<HTMLElement>(null);
-  const cspPromoDialog = useRef<HTMLDivElement>(null);
   const revealedContent = useRef<WeakSet<Element>>(new WeakSet());
   const [origin, setOrigin] = useState("/programacao");
   const lastRoute = useRef(route);
@@ -191,45 +200,6 @@ function App() {
   const [showEarlier, setShowEarlier] = useState(false);
   const position = useRef(0);
   const returning = useRef(false);
-  useEffect(() => {
-    if (!cspPromoOpen) return;
-    const previousFocus = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
-    const previousOverflow = document.body.style.overflow;
-    const dialog = cspPromoDialog.current;
-    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(
-      'button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
-    ) ?? []);
-    focusable()[0]?.focus();
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        rememberCspPromoDismissal();
-        setCspPromoOpen(false);
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const elements = focusable();
-      if (!elements.length) return;
-      const first = elements[0];
-      const last = elements[elements.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
-    };
-  }, [cspPromoOpen]);
   useEffect(() => {
     const handle = () => {
       setRoute(readRoute());
@@ -308,7 +278,7 @@ function App() {
         element.style.removeProperty("--scroll-reveal-delay");
       });
     };
-  }, [route, day, search, type, openOnly, showEarlier]);
+  }, [route, day, search, type, openOnly, showEarlier, publicationNow]);
   const isActivities = route === "/atividades",
     isAbout = route === "/sobre",
     isDetail = route.startsWith("/atividade/");
@@ -589,6 +559,13 @@ function App() {
                 <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && (registrationDestination(detail.registrationUrl) || detail.registrationDeadline) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
                   <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : registrationLabel(detail)}
                 </span>
+                {detail.registrationStatus === "closed" ? (
+                  <>
+                    <h2>Vagas preenchidas</h2>
+                    <p className="registration-closed-notice">As vagas desta atividade foram preenchidas e as inscrições estão encerradas.</p>
+                  </>
+                ) : (
+                  <>
                 <h2>Participe</h2>
                 <p className="capacity">
                   {detail.capacity === null
@@ -602,7 +579,9 @@ function App() {
                 {typeof detail.capacity === "number" && (
                   <p>Preenchimento por ordem de inscrição.</p>
                 )}
-                {actions(detail)}
+                {!registrationsReleased && detail.id !== "desafio-programacao"
+                  ? <p className="registration-help">{registrationReleaseNotice}</p>
+                  : actions(detail)}
                 {detail.registrationStatus === "none" ? (
                   <p className="registration-help">Esta atividade não exige inscrição.</p>
                 ) : detail.registrationStatus === "unknown" ? (
@@ -610,6 +589,8 @@ function App() {
                 ) : !detail.registrationInstructions ? (
                   <p className="registration-help">A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário.</p>
                 ) : null}
+                  </>
+                )}
                 <button className="text-button" onClick={share}>
                   <DetailIcon kind="link" />
                   Compartilhar atividade
@@ -916,54 +897,6 @@ function App() {
           Sobre o evento
         </a>
       </footer>
-      {cspPromoOpen && (
-        <div
-          className="csp-promo-backdrop"
-          onClick={(e) => {
-            if (e.target !== e.currentTarget) return;
-            rememberCspPromoDismissal();
-            setCspPromoOpen(false);
-          }}
-        >
-          <div
-            className="csp-promo-dialog"
-            ref={cspPromoDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="csp-promo-title"
-            aria-describedby="csp-promo-description"
-            tabIndex={-1}
-          >
-            <button
-              className="csp-promo-close"
-              type="button"
-              aria-label="Fechar destaque da CSP"
-              onClick={() => {
-                rememberCspPromoDismissal();
-                setCspPromoOpen(false);
-              }}
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-            <p className="csp-promo-eyebrow">XXI SEMINFO · COMPETIÇÃO</p>
-            <h2 id="csp-promo-title">Inscrições abertas para a CSP</h2>
-            <p id="csp-promo-description">
-              A 1ª Competição SEMINFO de Programação já está com inscrições abertas.
-            </p>
-            <a
-              className="csp-promo-cta"
-              href="#/atividade/desafio-programacao"
-              onClick={() => {
-                rememberCspPromoDismissal();
-                setCspPromoOpen(false);
-                openActivity();
-              }}
-            >
-              Conhecer a CSP <Arrow />
-            </a>
-          </div>
-        </div>
-      )}
     </>
   );
 }

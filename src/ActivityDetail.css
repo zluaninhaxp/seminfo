@@ -60,6 +60,7 @@
 .detail-page .detail-actions .button:hover svg { transform: translate(2px, -2px); }
 .detail-page .detail-demo-note { color: var(--pink); font-size: 14px; }
 .detail-page .participation .registration-help { font-size: 16px; line-height: 1.65; padding-top: 24px; margin-bottom: 26px; }
+.detail-page .participation .registration-closed-notice { margin-bottom: 26px; }
 .detail-page .participation .text-button { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; min-height: 50px; width: 100%; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; }
 .detail-page .participation .text-button svg { width: 22px; height: 22px; flex-shrink: 0; }
 .detail-page .participation .text-button:hover { background: var(--cyan); color: var(--ink); }

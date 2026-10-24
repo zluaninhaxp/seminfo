@@ -7,7 +7,6 @@ const browser=await chromium.launch({channel:'chrome',headless:true});
 try {
 for(const width of [360,390,1440]) {
 const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'});
-await page.addInitScript(()=>sessionStorage.setItem('seminfo-csp-promo-dismissed-v1','dismissed'));
 await page.goto('http://127.0.0.1:5174');
 await page.locator('.activity-row').waitFor();
 assert.equal(await page.locator('.activity-row').count(),1);
@@ -40,7 +39,6 @@ await page.close();
 // Fixtures only in intercepted browser responses; published data stays untouched.
 for(const width of [360,1440]) {
 const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'});
-await page.addInitScript(()=>sessionStorage.setItem('seminfo-csp-promo-dismissed-v1','dismissed'));
 await page.route(/\/src\/data\.ts(?:\?.*)?$/,async route=>{
 const response=await route.fetch();
 let body=await response.text();
