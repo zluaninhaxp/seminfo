@@ -483,9 +483,11 @@ main:focus { outline: none; }
 /* Programme rows stay on the continuous page surface. */
 .programme-activity-list .activity-row,
 .programme-activity-list .activity-row:hover { background: transparent; border-radius: 0; box-shadow: none; padding: 20px 0; }
-.programme-activity-list .activity-heading { margin-bottom: 8px; }
+.programme-activity-list .activity-heading { margin-bottom: 8px; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
 .programme-activity-list .activity-type { display: inline-flex; padding: 4px 14px; border: 1px solid currentColor; border-radius: 999px; font-size: 13px; line-height: 1.35; color: var(--pink); }
 .programme-activity-list .category-cyan { color: var(--cyan); }
+.programme-activity-list .activity-mode-presencial, .detail-type > .activity-mode-presencial { color: #9acb8b; border-color: rgb(154 203 139 / 65%); }
+.programme-activity-list .activity-mode-online, .detail-type > .activity-mode-online { color: #b5a0e0; border-color: rgb(181 160 224 / 65%); }
 .programme-activity-list .activity-row h3 { max-width: none; font-size: clamp(21px, 2vw, 25px); line-height: 1.3; }
 .programme-activity-list .activity-subtitle { margin: 5px 0 0; color: var(--cyan); font-size: 15px; font-weight: 600; line-height: 1.4; }
 .programme-activity-list .activity-meta { flex-direction: row; gap: 8px 24px; font-size: 14px; margin-top: 9px; }
@@ -520,20 +522,4 @@ main:focus { outline: none; }
   .programme-activity-list .agenda-button,
   .programme-activity-list .agenda-button svg { transition: none; }
   .programme-activity-list .agenda-register:not(:disabled):hover svg { transform: none; }
-}
-
-.csp-promo-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(2 6 26 / 82%); backdrop-filter: blur(10px); }
-.csp-promo-dialog { position: relative; width: min(100%, 520px); padding: clamp(26px, 5vw, 40px); border: 1px solid var(--line-strong); border-top: 2px solid var(--cyan); border-radius: 16px; background: var(--surface); box-shadow: 0 22px 70px rgb(0 0 0 / 45%); }
-.csp-promo-close { position: absolute; top: 12px; right: 12px; display: grid; width: 40px; height: 40px; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font-size: 25px; line-height: 1; transition: color var(--transition), background-color var(--transition); }
-.csp-promo-close:hover { background: rgb(85 229 242 / 10%); color: var(--cyan); }
-.csp-promo-eyebrow { margin: 0 48px 18px 0; color: var(--pink); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.csp-promo-dialog h2 { max-width: 16ch; margin: 0 35px 14px 0; font-size: clamp(27px, 5vw, 36px); line-height: 1.12; letter-spacing: -.035em; }
-.csp-promo-dialog > p:not(.csp-promo-eyebrow) { max-width: 48ch; color: var(--muted); font-size: 16px; line-height: 1.6; }
-.csp-promo-cta { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; padding: 12px 20px; border: 1px solid var(--cyan); border-radius: var(--radius); background: var(--cyan); color: var(--ink); font-weight: 700; text-decoration: none; transition: background var(--transition), border-color var(--transition), color var(--transition); }
-.csp-promo-cta svg { width: 17px; height: 17px; }
-.csp-promo-cta:hover { border-color: var(--text); background: var(--text); }
-@media (max-width: 480px) {
-  .csp-promo-backdrop { padding: 16px; }
-  .csp-promo-dialog { padding: 28px 22px; }
-  .csp-promo-cta { width: 100%; }
 }

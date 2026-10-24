@@ -1,16 +1,20 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { activities, days, event, type Activity } from "./data";
+import { isActivityPublished, nextActivityPublication } from "./activityPublication";
+import { registrationReleaseAt, registrationReleaseNotice, scheduledRegistration } from "./registrationRelease";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { activities as initialActivities, days, event, activityTime, hasParticipationRequirement, type Activity } from "./data";
 import "./App.css";
 import "./ActivityDetail.css";
 import "./AboutPage.css";
+import { MomentPreview, MomentDetails } from "./ActivityMoments";
 import { Hero, Waves } from "./Hero";
 import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
-import caSeminfoPhoto from "./assets/Organizadores/CAseminfo.jpeg";
+import { speakerPhoto } from "./speakerPhotos";
 
 const labels = {
+  unknown: "Inscrição a divulgar",
   open: "Inscrições abertas",
   closed: "Inscrições encerradas",
   full: "Vagas esgotadas",
@@ -89,24 +93,6 @@ function clock() {
   };
 }
 const readRoute = () => window.location.hash.slice(1) || "/programacao";
-const cspPromoStorageKey = "seminfo-csp-promo-dismissed-v1";
-function shouldShowCspPromo() {
-  const today = clock().date;
-  if (today < "2026-10-06" || today > "2026-10-23") return false;
-  if (!activities.some((activity) => activity.id === "desafio-programacao")) return false;
-  try {
-    return window.sessionStorage.getItem(cspPromoStorageKey) !== "dismissed";
-  } catch {
-    return true;
-  }
-}
-function rememberCspPromoDismissal() {
-  try {
-    window.sessionStorage.setItem(cspPromoStorageKey, "dismissed");
-  } catch {
-    // The modal still closes for the current visit if storage is unavailable.
-  }
-}
 const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -114,6 +100,81 @@ const normalize = (value: string) =>
     .toLowerCase();
 
 function App() {
+  const [publicationNow, setPublicationNow] = useState(Date.now);
+  useEffect(() => {
+    const update = () => setPublicationNow(Date.now());
+    const next = nextActivityPublication(publicationNow);
+    const timer = next === undefined ? undefined : window.setTimeout(update, Math.min(Math.max(0, next - Date.now()), 2_147_483_647));
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [publicationNow]);
+  const [registrationsReleased, setRegistrationsReleased] = useState(() => Date.now() >= registrationReleaseAt);
+  useEffect(() => {
+    const update = () => setRegistrationsReleased(Date.now() >= registrationReleaseAt);
+    const remaining = registrationReleaseAt - Date.now();
+    const timer = remaining > 0 ? window.setTimeout(update, Math.min(remaining, 2_147_483_647)) : undefined;
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [registrationsReleased]);
+  const [registrationStatuses, setRegistrationStatuses] = useState<Record<string, Activity["registrationStatus"]>>({});
+  const activities = useMemo(() => initialActivities.filter(activity => isActivityPublished(activity, publicationNow)).map(activity => {
+    const status = registrationStatuses[activity.id];
+    const current = status && activity.id !== "desafio-programacao"
+      ? { ...activity, registrationStatus: status }
+      : activity;
+    return scheduledRegistration(current, registrationsReleased);
+  }), [registrationStatuses, registrationsReleased, publicationNow]);
+  useEffect(() => {
+    let active = true;
+    let checking = false;
+    const controller = new AbortController();
+    const refresh = async () => {
+      if (checking || document.visibilityState === "hidden") return;
+      checking = true;
+      try {
+        const response = await fetch('/api/registration-status', { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) throw new Error('Registration check failed');
+        const values: unknown = await response.json();
+        if (!values || typeof values !== 'object' || Array.isArray(values)) throw new Error('Invalid registration status');
+        const statuses: Record<string, Activity["registrationStatus"]> = {};
+        for (const activity of initialActivities) {
+          if (activity.id === 'desafio-programacao' || !activity.registrationUrl) continue;
+          const value = (values as Record<string, unknown>)[activity.id];
+          statuses[activity.id] = value === 'open' || value === 'soon' || value === 'closed' || value === 'unknown'
+            ? value : 'unknown';
+        }
+        if (active) setRegistrationStatuses(statuses);
+      } catch {
+        if (active) setRegistrationStatuses(Object.fromEntries(initialActivities
+          .filter(activity => activity.id !== 'desafio-programacao' && activity.registrationUrl)
+          .map(activity => [activity.id, 'unknown'])));
+      } finally {
+        checking = false;
+      }
+    };
+    void refresh();
+    const timer = window.setInterval(() => { void refresh(); }, 60_000);
+    const onVisible = () => { void refresh(); };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      active = false;
+      controller.abort();
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, []);
   const [route, setRoute] = useState(readRoute);
   const [day, setDay] = useState(() => {
     const onlyActivity = activities.length === 1 ? activities[0] : undefined;
@@ -131,9 +192,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [now, setNow] = useState(clock);
   const [shareMessage, setShareMessage] = useState("");
-  const [cspPromoOpen, setCspPromoOpen] = useState(shouldShowCspPromo);
   const main = useRef<HTMLElement>(null);
-  const cspPromoDialog = useRef<HTMLDivElement>(null);
   const revealedContent = useRef<WeakSet<Element>>(new WeakSet());
   const [origin, setOrigin] = useState("/programacao");
   const lastRoute = useRef(route);
@@ -141,45 +200,6 @@ function App() {
   const [showEarlier, setShowEarlier] = useState(false);
   const position = useRef(0);
   const returning = useRef(false);
-  useEffect(() => {
-    if (!cspPromoOpen) return;
-    const previousFocus = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
-    const previousOverflow = document.body.style.overflow;
-    const dialog = cspPromoDialog.current;
-    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(
-      'button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
-    ) ?? []);
-    focusable()[0]?.focus();
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        rememberCspPromoDismissal();
-        setCspPromoOpen(false);
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const elements = focusable();
-      if (!elements.length) return;
-      const first = elements[0];
-      const last = elements[elements.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
-    };
-  }, [cspPromoOpen]);
   useEffect(() => {
     const handle = () => {
       setRoute(readRoute());
@@ -258,7 +278,7 @@ function App() {
         element.style.removeProperty("--scroll-reveal-delay");
       });
     };
-  }, [route, day, search, type, openOnly, showEarlier]);
+  }, [route, day, search, type, openOnly, showEarlier, publicationNow]);
   const isActivities = route === "/atividades",
     isAbout = route === "/sobre",
     isDetail = route.startsWith("/atividade/");
@@ -275,21 +295,21 @@ function App() {
             (isActivities || a.date === day) &&
             (type === "Todas" || a.type === type) &&
             (!openOnly || (a.registrationStatus === "open" && !a.cancelled && (Boolean(registrationDestination(a.registrationUrl)) || Boolean(a.registrationDeadline)))) &&
-            normalize(`${a.title} ${a.speaker} ${a.location}`).includes(
+            normalize(`${a.title} ${a.speaker} ${a.location} ${(a.moments ?? []).map(m => `${m.title ?? ""} ${(m.speakers ?? []).map(s => s.name).join(" ")}`).join(" ")}`).includes(
               normalize(search),
             ),
         )
         .sort(
           (a, b) =>
-            a.date.localeCompare(b.date) || a.start.localeCompare(b.start),
+            a.date.localeCompare(b.date) || (a.start ?? "99:99").localeCompare(b.start ?? "99:99"),
         ),
-    [day, type, openOnly, search, isActivities],
+    [activities, day, type, openOnly, search, isActivities],
   );
   const isToday = event.phase === "live" && day === now.date && !isActivities;
-  const ended = isToday ? filtered.filter((a) => a.end <= now.time) : [];
+  const ended = isToday ? filtered.filter((a) => a.end && a.end <= now.time) : [];
   const visible =
-    isToday && !showEarlier && filtered.some((a) => a.end > now.time)
-      ? filtered.filter((a) => a.end > now.time)
+    isToday && !showEarlier && filtered.some((a) => (!a.end || a.end > now.time))
+      ? filtered.filter((a) => (!a.end || a.end > now.time))
       : filtered;
   const showUndisclosedSchedule =
     !isActivities && filtered.length === 0 && !search.trim() && type === "Todas" && !openOnly;
@@ -299,10 +319,10 @@ function App() {
   const types = [...new Set(activities.map((a) => a.type))];
   const selectedDay = days.find((d) => d.date === day);
   const temporal = (a: Activity) =>
-    event.phase === "live" && a.date === now.date && !a.cancelled
+    event.phase === "live" && a.date === now.date && !a.cancelled && a.start && a.end
       ? a.start <= now.time && a.end > now.time
         ? "Em andamento · conforme a programação"
-        : a.end <= now.time
+        : a.end && a.end <= now.time
           ? "Encerrada · conforme a programação"
           : ""
       : "";
@@ -476,7 +496,7 @@ function App() {
             <div className="detail-layout">
               <div className="detail-intro">
                 <div className="detail-type">
-                  <span>{detail.type}</span><span>{detail.mode}</span>
+                  <span>{detail.type}</span><span className={detail.mode ? `activity-mode-${detail.mode.toLowerCase()}` : undefined}>{detail.mode || "Modalidade a divulgar"}</span>
                 </div>
                 <h1>{detail.title}</h1>
                 {detail.cancelled && (
@@ -488,12 +508,12 @@ function App() {
               </div>
                 <div className="detail-summary">
                   <div><DetailIcon kind="calendar" /><p>{dateLabel(detail.date)}<small>{new Intl.DateTimeFormat("pt-BR", { weekday: "long", timeZone: "America/Sao_Paulo" }).format(new Date(`${detail.date}T12:00:00-03:00`))}</small></p></div>
-                  <div><AgendaIcon /><p>{detail.start}–{detail.end}<small>Horário de Brasília</small></p></div>
-                  <div><AgendaIcon location /><p>{detail.location || "Local a divulgar"}<small>{detail.mode}</small></p></div>
+                  <div><AgendaIcon /><p>{activityTime(detail, true)}<small>Horário de Brasília</small></p></div>
+                  <div><AgendaIcon location /><p>{detail.location || "Local a divulgar"}<small>{detail.mode || "Modalidade a divulgar"}</small></p></div>
                 </div>
               <article className="detail-body">
                 <h2>Sobre a atividade</h2>
-                <p>{detail.description}</p>
+                <div className="activity-description">{detail.description.split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
                 {detail.competitionSchedule?.length ? (
                   <section className="competition-schedule" aria-labelledby="competition-schedule-title">
                     <h2 id="competition-schedule-title">Cronograma da competição</h2>
@@ -508,39 +528,44 @@ function App() {
                             ) : <span>Horário a divulgar</span>}
                             <small>{dateLabel(stage.date)}</small>
                           </div>
-                          <h3>{stage.title}</h3>
+                          <h3>{stage.title === "Prova" ? <strong>{stage.title}</strong> : stage.title}</h3>
                         </li>
                       ))}
                     </ol>
                   </section>
                 ) : null}
-                <h2>Quem conduz</h2>
+                {detail.moments?.length ? <MomentDetails moments={detail.moments} /> : null}
+                {!detail.moments?.length || detail.speaker ? <><h2>Quem conduz</h2>
                 <div className="detail-speakers">
                   {detail.speaker ? detail.speaker.split(/\s+e\s+|\s*;\s*/).map((speaker, index) => {
                     const [name, ...notes] = speaker.split("·");
                     const words = name.trim().split(/\s+/);
                     const initials = [words[0]?.[0], words.length > 1 ? words[words.length - 1]?.[0] : ""].join("").toUpperCase();
-                    const isAcademicCenter = name.trim() === "Centro Acadêmico Alan Turing";
-                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${isAcademicCenter ? "speaker-avatar-image" : ""}`} aria-hidden="true">{isAcademicCenter ? <img src={caSeminfoPhoto} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
+                    const photo = speakerPhoto(name);
+                    return <div className="detail-speaker" key={`${speaker}-${index}`}><span className={`speaker-avatar ${photo ? "speaker-avatar-image" : ""}`} aria-hidden="true">{photo ? <img src={photo} alt="" /> : initials}</span><p><strong>{name.trim()}</strong>{notes.length > 0 && <small>{notes.join("·").trim()}</small>}</p></div>;
                   }) : <p>Responsável a divulgar.</p>}
                 </div>
-                <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
+                </> : null}
+                {detail.requirements.some(hasParticipationRequirement) && <section className={detail.type === "Competição" ? "competition-rules" : "activity-requirements"} aria-labelledby="requirements-title">
                   <h2 id="requirements-title">Antes de participar</h2>
-                  {detail.requirements.length ? (
                     <ul>
-                      {detail.requirements.map((r) => (
+                      {detail.requirements.filter(hasParticipationRequirement).map((r) => (
                         <li key={typeof r === "string" ? r : r.text}>{renderRequirement(r)}</li>
                       ))}
                     </ul>
-                  ) : (
-                    <p>Não há requisitos informados.</p>
-                  )}
-                </section>
+                </section>}
               </article>
               <aside className="participation">
                 <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && (registrationDestination(detail.registrationUrl) || detail.registrationDeadline) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
                   <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : registrationLabel(detail)}
                 </span>
+                {detail.registrationStatus === "closed" ? (
+                  <>
+                    <h2>Vagas preenchidas</h2>
+                    <p className="registration-closed-notice">As vagas desta atividade foram preenchidas e as inscrições estão encerradas.</p>
+                  </>
+                ) : (
+                  <>
                 <h2>Participe</h2>
                 <p className="capacity">
                   {detail.capacity === null
@@ -554,12 +579,18 @@ function App() {
                 {typeof detail.capacity === "number" && (
                   <p>Preenchimento por ordem de inscrição.</p>
                 )}
-                {actions(detail)}
+                {!registrationsReleased && detail.id !== "desafio-programacao"
+                  ? <p className="registration-help">{registrationReleaseNotice}</p>
+                  : actions(detail)}
                 {detail.registrationStatus === "none" ? (
                   <p className="registration-help">Esta atividade não exige inscrição.</p>
+                ) : detail.registrationStatus === "unknown" ? (
+                  <p className="registration-help">As orientações de participação serão divulgadas junto às informações da atividade.</p>
                 ) : !detail.registrationInstructions ? (
                   <p className="registration-help">A inscrição é feita por atividade, em formulário externo. Consulte as orientações de confirmação no formulário.</p>
                 ) : null}
+                  </>
+                )}
                 <button className="text-button" onClick={share}>
                   <DetailIcon kind="link" />
                   Compartilhar atividade
@@ -712,7 +743,7 @@ function App() {
                       {filtered.length > 0 && ended.length === filtered.length
                         ? "A programação de hoje terminou."
                         : visible.some(
-                              (a) => a.start <= now.time && a.end > now.time,
+                              (a) => a.start && a.start <= now.time && (!a.end || a.end > now.time),
                             )
                           ? "Em andamento e próximos horários"
                           : "Próximos horários"}{" "}
@@ -764,7 +795,7 @@ function App() {
                   groups.map((group) => (
                     <div className="time-group" key={group}>
                       <div className="group-label">
-                        {isActivities ? dateLabel(group) : group}
+                        {isActivities ? dateLabel(group!) : group || "A divulgar"}
                       </div>
                       <div className="group-activities">
                         {visible
@@ -777,14 +808,23 @@ function App() {
                               className={`activity-row ${a.cancelled ? "cancelled" : ""}`}
                             >
                               <>
-                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span></div>
+                                <div className="activity-heading"><span className={`activity-type ${a.type === "Oficina" ? "category-cyan" : ""}`}>{a.type}</span>{a.mode && <span className={`activity-type activity-mode-${a.mode.toLowerCase()}`}>{a.mode}</span>}{a.flag && <span className="activity-type category-cyan">{a.flag}</span>}</div>
                                 <h3><a href={`#/atividade/${a.id}`} onClick={openActivity}>{a.title}</a></h3>
                                 {a.subtitle && <p className="activity-subtitle">{a.subtitle}</p>}
                                 <div className="activity-meta">
-                                  <span><AgendaIcon />{a.start}–{a.end}</span>
-                                  <span><AgendaIcon location />{a.location}</span>
+                                  <span><AgendaIcon />{activityTime(a, true)}</span>
+                                  <span><AgendaIcon location />{a.location || "Local a divulgar"}</span>
                                 </div>
-                                <p className="activity-speaker">{a.speaker}</p>
+                                {a.speaker && <p className="activity-speaker">{a.speaker}</p>}
+                                {a.moments?.length ? <MomentPreview moments={a.moments} /> : a.competitionSchedule?.length ? (
+                                  <MomentPreview moments={a.competitionSchedule.map((stage, index) => ({
+                                    id: `stage-${index}`,
+                                    kind: "ceremony",
+                                    title: stage.title,
+                                    start: stage.start,
+                                    end: stage.title === "Prova" ? stage.end : undefined,
+                                  }))} />
+                                ) : null}
                                 {a.notice && <p className="row-notice">{a.notice}</p>}
                                 {temporal(a) && <p className="temporal">{temporal(a)}</p>}
                                 <div className="activity-bottom">
@@ -857,54 +897,6 @@ function App() {
           Sobre o evento
         </a>
       </footer>
-      {cspPromoOpen && (
-        <div
-          className="csp-promo-backdrop"
-          onClick={(e) => {
-            if (e.target !== e.currentTarget) return;
-            rememberCspPromoDismissal();
-            setCspPromoOpen(false);
-          }}
-        >
-          <div
-            className="csp-promo-dialog"
-            ref={cspPromoDialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="csp-promo-title"
-            aria-describedby="csp-promo-description"
-            tabIndex={-1}
-          >
-            <button
-              className="csp-promo-close"
-              type="button"
-              aria-label="Fechar destaque da CSP"
-              onClick={() => {
-                rememberCspPromoDismissal();
-                setCspPromoOpen(false);
-              }}
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-            <p className="csp-promo-eyebrow">XXI SEMINFO · COMPETIÇÃO</p>
-            <h2 id="csp-promo-title">Inscrições abertas para a CSP</h2>
-            <p id="csp-promo-description">
-              A 1ª Competição SEMINFO de Programação já está com inscrições abertas.
-            </p>
-            <a
-              className="csp-promo-cta"
-              href="#/atividade/desafio-programacao"
-              onClick={() => {
-                rememberCspPromoDismissal();
-                setCspPromoOpen(false);
-                openActivity();
-              }}
-            >
-              Conhecer a CSP <Arrow />
-            </a>
-          </div>
-        </div>
-      )}
     </>
   );
 }

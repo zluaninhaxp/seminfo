@@ -24,6 +24,8 @@
 .detail-page .detail-body h2 { font-size: 25px; margin: 26px 0 10px; }
 .detail-body h2::before { content: ""; display: block; width: 22px; height: 3px; background: var(--pink); margin-bottom: 8px; }
 .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 17px; line-height: 1.65; }
+.activity-description p { font-size: 17px; line-height: 1.65; white-space: pre-line; }
+.activity-description p + p { margin-top: 18px; }
 .competition-schedule { margin-top: 28px; }
 .detail-page .competition-schedule h2 { margin-top: 0; }
 .competition-schedule ol { display: grid; gap: 15px; margin: 16px 0 0; padding: 0; list-style: none; }
@@ -58,6 +60,7 @@
 .detail-page .detail-actions .button:hover svg { transform: translate(2px, -2px); }
 .detail-page .detail-demo-note { color: var(--pink); font-size: 14px; }
 .detail-page .participation .registration-help { font-size: 16px; line-height: 1.65; padding-top: 24px; margin-bottom: 26px; }
+.detail-page .participation .registration-closed-notice { margin-bottom: 26px; }
 .detail-page .participation .text-button { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; min-height: 50px; width: 100%; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; }
 .detail-page .participation .text-button svg { width: 22px; height: 22px; flex-shrink: 0; }
 .detail-page .participation .text-button:hover { background: var(--cyan); color: var(--ink); }
@@ -74,7 +77,7 @@
   .detail-page .participation { margin-top: 0; padding: 28px 0; border-left: 0; border-bottom: 1px solid var(--line); }
   .detail-intro h1 { font-size: clamp(32px, 7vw, 48px); }
   .detail-decoration { width: 100%; opacity: .14; }
-  .detail-page .detail-body > p, .detail-page .detail-body li { font-size: 16px; }
+  .detail-page .detail-body > p, .detail-page .detail-body li, .activity-description p { font-size: 16px; }
   .competition-schedule li { grid-template-columns: minmax(92px, auto) minmax(0, 1fr); gap: 14px; }
   .competition-schedule-time { font-size: 15px; }
   .competition-schedule h3 { font-size: 16px; }
