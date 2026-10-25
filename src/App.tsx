@@ -1,5 +1,4 @@
 import { isActivityPublished, nextActivityPublication } from "./activityPublication";
-import { registrationReleaseAt, registrationReleaseNotice, scheduledRegistration } from "./registrationRelease";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { activities as initialActivities, days, event, activityTime, hasParticipationRequirement, type Activity } from "./data";
 import "./App.css";
@@ -113,27 +112,15 @@ function App() {
       document.removeEventListener("visibilitychange", update);
     };
   }, [publicationNow]);
-  const [registrationsReleased, setRegistrationsReleased] = useState(() => Date.now() >= registrationReleaseAt);
-  useEffect(() => {
-    const update = () => setRegistrationsReleased(Date.now() >= registrationReleaseAt);
-    const remaining = registrationReleaseAt - Date.now();
-    const timer = remaining > 0 ? window.setTimeout(update, Math.min(remaining, 2_147_483_647)) : undefined;
-    window.addEventListener("focus", update);
-    document.addEventListener("visibilitychange", update);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("focus", update);
-      document.removeEventListener("visibilitychange", update);
-    };
-  }, [registrationsReleased]);
   const [registrationStatuses, setRegistrationStatuses] = useState<Record<string, Activity["registrationStatus"]>>({});
   const activities = useMemo(() => initialActivities.filter(activity => isActivityPublished(activity, publicationNow)).map(activity => {
     const status = registrationStatuses[activity.id];
-    const current = status && activity.id !== "desafio-programacao"
+    // Only confirmed closure hides a published participant link.
+    const current = status === "closed" && activity.id !== "desafio-programacao"
       ? { ...activity, registrationStatus: status }
       : activity;
-    return scheduledRegistration(current, registrationsReleased);
-  }), [registrationStatuses, registrationsReleased, publicationNow]);
+    return current;
+  }), [registrationStatuses, publicationNow]);
   useEffect(() => {
     let active = true;
     let checking = false;
@@ -579,9 +566,7 @@ function App() {
                 {typeof detail.capacity === "number" && (
                   <p>Preenchimento por ordem de inscrição.</p>
                 )}
-                {!registrationsReleased && detail.id !== "desafio-programacao"
-                  ? <p className="registration-help">{registrationReleaseNotice}</p>
-                  : actions(detail)}
+                {actions(detail)}
                 {detail.registrationStatus === "none" ? (
                   <p className="registration-help">Esta atividade não exige inscrição.</p>
                 ) : detail.registrationStatus === "unknown" ? (
