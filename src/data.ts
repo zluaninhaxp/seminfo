@@ -80,7 +80,7 @@ export const activities: Activity[] = [
     "speaker": "Centro Acadêmico Alan Turing",
     "description": "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
     "requirements": [],
-    "registrationStatus": "soon",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/zQFW72vRCJJWeWwH6",
     "moments": [
       {
@@ -211,7 +211,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "soon",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/WrSY8bjHdyVj4Cwo8",
     "start": "13:00",
     "capacity": 15,
@@ -236,6 +236,7 @@ export const activities: Activity[] = [
   },
   {
     "id": "acervo-abreu",
+    "capacity": null,
     "title": "Acervo Brasileiro de Referências sobre Eugenia (ABREU): o uso de ferramentas Google na construção de uma plataforma de divulgação científica",
     "type": "Palestra",
     "date": "2026-10-27",
@@ -295,7 +296,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "soon",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/nUNMxjPwkrkSie9J9",
     "start": "19:30",
     "mode": "Online",
