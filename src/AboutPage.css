@@ -18,10 +18,11 @@
 .about-wave-decoration { position: absolute; z-index: -1; top: 0; right: -6%; width: min(54%, 760px); height: 100%; opacity: .18; pointer-events: none; mask-image: linear-gradient(90deg, transparent, #000 44%); }
 .about-wave-decoration .hero-waves { position: absolute; inset: 0; width: 100%; height: 100%; }
 .about-wave-decoration .hero-wave-drift { animation: none; }
-.sponsor-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 38px 64px; min-height: 112px; margin-top: 28px; }
+.sponsor-logos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; margin-top: 32px; }
 .sponsor-logos:empty { min-height: 0; margin-top: 0; }
-.sponsor-logos > * { display: grid; place-items: center; min-width: 0; }
-.sponsor-logos img { display: block; width: min(100%, 230px); max-height: 92px; object-fit: contain; }
+.sponsor-logos > * { display: grid; place-items: center; min-width: 0; min-height: 168px; padding: 28px 16px; border-bottom: 1px solid var(--line); }
+.sponsor-logos > :nth-last-child(-n+3) { border-bottom: 0; }
+.sponsor-logos img { display: block; width: 100%; max-width: 260px; height: 104px; object-fit: contain; }
 .sponsor-logos a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 6px; }
 .realization-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 34px 44px; margin-top: 24px; }
 .realization-logos img { display: block; width: min(100%, 290px); max-height: 100px; object-fit: contain; object-position: left center; }
@@ -38,8 +39,10 @@
   .about-history h3 { font-size: 17px; }
   .about-history p { font-size: 15px; }
   .about-wave-decoration { right: -25%; width: 90%; opacity: .12; }
-  .sponsor-logos { justify-content: flex-start; gap: 24px 34px; min-height: 72px; margin-top: 22px; }
-  .sponsor-logos img { width: min(40vw, 190px); max-height: 76px; }
+  .sponsor-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; margin-top: 24px; }
+  .sponsor-logos > * { min-height: 132px; padding: 24px 4px; }
+  .sponsor-logos > :nth-last-child(3) { border-bottom: 1px solid var(--line); }
+  .sponsor-logos img { height: 84px; }
   .realization-logos { gap: 24px; margin-top: 20px; }
   .realization-logos img { width: min(68vw, 250px); max-height: 82px; }
   .realization-logos span { width: min(100%, 250px); height: 1px; }

@@ -35,6 +35,7 @@ export interface Activity {
   registrationUrl?: string;
   registrationDeadline?: string;
   registrationInstructions?: string;
+  registrationMode?: "local";
   onlineUrl?: string;
   moments?: ActivityMoment[];
   competitionSchedule?: {
@@ -81,7 +82,8 @@ export const activities: Activity[] = [
     "description": "A abertura oficial da XXI Semana da Informática (SEMINFO 2026) marca o início das atividades do evento, reunindo estudantes, professores e demais participantes para uma programação de integração e troca de conhecimentos.",
     "requirements": [],
     "registrationStatus": "open",
-    "registrationUrl": "https://forms.gle/zQFW72vRCJJWeWwH6",
+    "registrationInstructions": "O link do formulário será disponibilizado no local do evento.",
+    "registrationMode": "local",
     "moments": [
       {
         "id": "cerimonia",

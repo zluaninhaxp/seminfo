@@ -10,6 +10,12 @@ import { Arrow } from "./Experience";
 import seminfoLogo from "./assets/LogoSEMINFO.png";
 import instituteLogo from "./assets/LogoIF.png";
 import academicCenterLogo from "./assets/LogoCA2.png";
+import intechLogo from "./assets/Patrocinadores/TELÃO (7).png";
+import ubyLogo from "./assets/Patrocinadores/TELÃO (6).png";
+import lerianLogo from "./assets/Patrocinadores/TELÃO (5).png";
+import marianoLogo from "./assets/Patrocinadores/TELÃO (4).png";
+import coopamLogo from "./assets/Patrocinadores/TELÃO (3).png";
+import bazarLogo from "./assets/Patrocinadores/TELÃO (2).png";
 import { speakerPhoto } from "./speakerPhotos";
 
 const labels = {
@@ -20,7 +26,14 @@ const labels = {
   none: "Sem inscrição",
   soon: "Inscrições em breve",
 };
-const sponsors: { name: string; image: string; href?: string }[] = [];
+const sponsors: { name: string; image: string; href?: string }[] = [
+  { name: "Intech Jr", image: intechLogo },
+  { name: "UBY — Transporte por Aplicativo", image: ubyLogo },
+  { name: "Lerian", image: lerianLogo },
+  { name: "Mariano Calçados", image: marianoLogo },
+  { name: "COOPAM", image: coopamLogo },
+  { name: "Bazar beneficente — Frente de Apoio ao Menor", image: bazarLogo },
+];
 function registrationDestination(value?: string) {
   if (!value) return undefined;
   try {
@@ -41,6 +54,7 @@ function isDemoRegistration(value?: string) {
   }
 }
 function registrationLabel(activity: Activity) {
+  if (activity.registrationMode === "local") return "Formulário no local";
   if (activity.registrationStatus === "open" && !registrationDestination(activity.registrationUrl)) {
     return activity.registrationDeadline
       ? `Inscrições abertas até ${activity.registrationDeadline}`
@@ -613,7 +627,7 @@ function App() {
               <p>Empresas e parceiros que apoiam a SEMINFO e ajudam a tornar esta experiência possível.</p>
               <div className="sponsor-logos" aria-label="Marcas patrocinadoras">
                 {sponsors.map((sponsor) => {
-                  const logo = <img src={sponsor.image} alt={sponsor.name} />;
+                  const logo = <img src={sponsor.image} alt={sponsor.name} loading="lazy" decoding="async" />;
                   return sponsor.href
                     ? <a key={sponsor.name} href={sponsor.href} target="_blank" rel="noopener noreferrer" aria-label={sponsor.name}>{logo}</a>
                     : <div key={sponsor.name}>{logo}</div>;
@@ -820,7 +834,7 @@ function App() {
                                   <div className="agenda-actions">
                                     <a className="agenda-button agenda-details" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Ver detalhes de ${a.title}`}>Ver detalhes<Arrow diagonal /></a>
                                     {!a.cancelled && a.registrationStatus === "open" && (registrationDestination(a.registrationUrl) || a.registrationInstructions)
-                                      ? <a className="agenda-button agenda-register" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Inscreva-se em ${a.title}`}>Inscreva-se<Arrow /></a>
+                                      ? <a className="agenda-button agenda-register" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={a.registrationMode === "local" ? `Como participar de ${a.title}` : `Inscreva-se em ${a.title}`}>{a.registrationMode === "local" ? "Como participar" : "Inscreva-se"}<Arrow /></a>
                                       : <button className="agenda-button agenda-register" disabled>Inscreva-se<Arrow /></button>}
                                   </div>
                                 </div>
