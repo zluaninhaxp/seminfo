@@ -129,6 +129,7 @@ export const activities: Activity[] = [
     ],
     "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/vDC8LMxd45UBkJqV7",
+    "onlineUrl": "https://meet.google.com/zgz-motj-bar",
     "start": "19:30",
     "mode": "Online",
     "capacity": null
@@ -283,6 +284,7 @@ export const activities: Activity[] = [
     ],
     "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/tHazG5a34BtcZMrD6",
+    "onlineUrl": "https://meet.google.com/qtj-gjbg-pao",
     "start": "19:30",
     "mode": "Online",
     "capacity": null
@@ -300,6 +302,7 @@ export const activities: Activity[] = [
     ],
     "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/nUNMxjPwkrkSie9J9",
+    "onlineUrl": "https://meet.google.com/tii-zouj-eab",
     "start": "19:30",
     "mode": "Online",
     "capacity": null

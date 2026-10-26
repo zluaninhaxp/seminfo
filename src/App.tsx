@@ -189,6 +189,7 @@ function App() {
   });
   const [search, setSearch] = useState("");
   const [type, setType] = useState("Todas");
+  const [mode, setMode] = useState("Todas");
   const [openOnly, setOpenOnly] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [now, setNow] = useState(clock);
@@ -279,7 +280,7 @@ function App() {
         element.style.removeProperty("--scroll-reveal-delay");
       });
     };
-  }, [route, day, search, type, openOnly, showEarlier, publicationNow]);
+  }, [route, day, search, type, mode, openOnly, showEarlier, publicationNow]);
   const isActivities = route === "/atividades",
     isAbout = route === "/sobre",
     isDetail = route.startsWith("/atividade/");
@@ -295,6 +296,7 @@ function App() {
           (a) =>
             (isActivities || a.date === day) &&
             (type === "Todas" || a.type === type) &&
+            (mode === "Todas" || a.mode === mode) &&
             (!openOnly || (a.registrationStatus === "open" && !a.cancelled && (Boolean(registrationDestination(a.registrationUrl)) || Boolean(a.registrationDeadline)))) &&
             normalize(`${a.title} ${a.speaker} ${a.location} ${(a.moments ?? []).map(m => `${m.title ?? ""} ${(m.speakers ?? []).map(s => s.name).join(" ")}`).join(" ")}`).includes(
               normalize(search),
@@ -304,7 +306,7 @@ function App() {
           (a, b) =>
             a.date.localeCompare(b.date) || (a.start ?? "99:99").localeCompare(b.start ?? "99:99"),
         ),
-    [activities, day, type, openOnly, search, isActivities],
+    [activities, day, type, mode, openOnly, search, isActivities],
   );
   const isToday = event.phase === "live" && day === now.date && !isActivities;
   const ended = isToday ? filtered.filter((a) => a.end && a.end <= now.time) : [];
@@ -313,7 +315,7 @@ function App() {
       ? filtered.filter((a) => (!a.end || a.end > now.time))
       : filtered;
   const showUndisclosedSchedule =
-    !isActivities && filtered.length === 0 && !search.trim() && type === "Todas" && !openOnly;
+    !isActivities && filtered.length === 0 && !search.trim() && type === "Todas" && mode === "Todas" && !openOnly;
   const groups = [
     ...new Set(visible.map((a) => (isActivities ? a.date : a.start))),
   ];
@@ -335,6 +337,7 @@ function App() {
   const clear = () => {
     setSearch("");
     setType("Todas");
+    setMode("Todas");
     setOpenOnly(false);
   };
   async function share() {
@@ -350,19 +353,6 @@ function App() {
       return <p className="action-note">Esta atividade foi cancelada.</p>;
     return (
       <div className="detail-actions">
-        {a.mode === "Online" &&
-          (a.onlineUrl ? (
-            <a
-              className="button"
-              href={a.onlineUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {event.demo ? "Acessar transmissão demonstrativa" : "Acessar atividade online"}
-            </a>
-          ) : (
-            <p className="action-note">Link de acesso online a divulgar.</p>
-          ))}
         {a.registrationStatus === "open" &&
           (registrationDestination(a.registrationUrl) ? (
             <a
@@ -384,6 +374,23 @@ function App() {
           <p className="action-note">{labels[a.registrationStatus]}</p>
         )}
         {a.registrationStatus === "open" && isDemoRegistration(a.registrationUrl) && <p className="detail-demo-note">Formulário demonstrativo</p>}
+        {a.mode === "Online" && (
+          <>
+            <p className="action-note">Para receber o certificado, é necessário preencher o formulário de inscrição. Apenas assistir à palestra não garante a emissão do certificado.</p>
+            {a.onlineUrl ? (
+              <a
+                className="button"
+                href={a.onlineUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {event.demo ? "Acessar transmissão demonstrativa" : "Acessar atividade online"}
+              </a>
+            ) : (
+              <p className="action-note">Link de acesso online a divulgar.</p>
+            )}
+          </>
+        )}
       </div>
     );
   }
@@ -702,6 +709,14 @@ function App() {
                       ))}
                     </select>
                   </label>
+                  <label>
+                    Modalidade
+                    <select value={mode} onChange={(e) => setMode(e.target.value)}>
+                      <option>Todas</option>
+                      <option>Online</option>
+                      <option>Presencial</option>
+                    </select>
+                  </label>
                   <label className="checkbox">
                     <input
                       type="checkbox"
@@ -710,7 +725,7 @@ function App() {
                     />
                     <span>Somente inscrições abertas</span>
                   </label>
-                  {(search || type !== "Todas" || openOnly) && (
+                  {(search || type !== "Todas" || mode !== "Todas" || openOnly) && (
                     <button className="text-button" onClick={clear}>
                       Limpar filtros
                     </button>
@@ -780,11 +795,11 @@ function App() {
                     <p>
                       {showUndisclosedSchedule
                         ? "Em breve teremos novidades para este dia."
-                        : search || type !== "Todas" || openOnly
+                        : search || type !== "Todas" || mode !== "Todas" || openOnly
                         ? "Experimente limpar os filtros ou buscar outro termo."
                         : "Ainda não há atividades publicadas para este dia."}
                     </p>
-                    {(search || type !== "Todas" || openOnly) && (
+                    {(search || type !== "Todas" || mode !== "Todas" || openOnly) && (
                       <button className="button" onClick={clear}>
                         Limpar filtros
                       </button>
