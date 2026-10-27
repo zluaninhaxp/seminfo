@@ -129,8 +129,8 @@ function App() {
   const [registrationStatuses, setRegistrationStatuses] = useState<Record<string, Activity["registrationStatus"]>>({});
   const activities = useMemo(() => initialActivities.filter(activity => isActivityPublished(activity, publicationNow)).map(activity => {
     const status = registrationStatuses[activity.id];
-    // Only confirmed closure hides a published participant link.
-    const current = status === "closed" && activity.id !== "desafio-programacao"
+    // A confirmed response can close or reopen a form; unknown responses never undo it.
+    const current = (status === "closed" || status === "open") && activity.id !== "desafio-programacao"
       ? { ...activity, registrationStatus: status }
       : activity;
     return current;
@@ -154,11 +154,12 @@ function App() {
           statuses[activity.id] = value === 'open' || value === 'soon' || value === 'closed' || value === 'unknown'
             ? value : 'unknown';
         }
-        if (active) setRegistrationStatuses(statuses);
+        if (active) setRegistrationStatuses(previous => ({
+          ...previous,
+          ...Object.fromEntries(Object.entries(statuses).filter(([, status]) => status === 'open' || status === 'closed')),
+        }));
       } catch {
-        if (active) setRegistrationStatuses(Object.fromEntries(initialActivities
-          .filter(activity => activity.id !== 'desafio-programacao' && activity.registrationUrl)
-          .map(activity => [activity.id, 'unknown'])));
+        // Keep the last confirmed status when the endpoint or network is unavailable.
       } finally {
         checking = false;
       }
@@ -567,10 +568,11 @@ function App() {
                 <span className={`detail-registration-status ${detail.cancelled || detail.registrationStatus === "full" ? "detail-status-full" : detail.registrationStatus === "open" && (registrationDestination(detail.registrationUrl) || detail.registrationDeadline) ? "detail-status-open" : detail.registrationStatus === "soon" || detail.registrationStatus === "open" ? "detail-status-soon" : ""}`}>
                   <span aria-hidden="true" />{detail.cancelled ? "Cancelada" : registrationLabel(detail)}
                 </span>
-                {detail.registrationStatus === "closed" ? (
+                {detail.registrationStatus === "closed" || detail.registrationStatus === "full" ? (
                   <>
-                    <h2>Vagas preenchidas</h2>
-                    <p className="registration-closed-notice">As vagas desta atividade foram preenchidas e as inscrições estão encerradas.</p>
+                    <h2>{typeof detail.capacity === "number" || detail.capacity === "limited" || detail.registrationStatus === "full" ? "Vagas preenchidas" : "Inscrições encerradas"}</h2>
+                    <p className="registration-closed-notice">{typeof detail.capacity === "number" || detail.capacity === "limited" || detail.registrationStatus === "full" ? "As inscrições foram encerradas porque todas as vagas desta atividade foram preenchidas." : "O formulário desta atividade não aceita mais inscrições."}</p>
+                    {detail.mode === "Online" && actions(detail)}
                   </>
                 ) : (
                   <>
@@ -850,7 +852,7 @@ function App() {
                                     <a className="agenda-button agenda-details" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={`Ver detalhes de ${a.title}`}>Ver detalhes<Arrow diagonal /></a>
                                     {!a.cancelled && a.registrationStatus === "open" && (registrationDestination(a.registrationUrl) || a.registrationInstructions)
                                       ? <a className="agenda-button agenda-register" href={`#/atividade/${a.id}`} onClick={openActivity} aria-label={a.registrationMode === "local" ? `Como participar de ${a.title}` : `Inscreva-se em ${a.title}`}>{a.registrationMode === "local" ? "Como participar" : "Inscreva-se"}<Arrow /></a>
-                                      : <button className="agenda-button agenda-register" disabled>Inscreva-se<Arrow /></button>}
+                                      : <button className="agenda-button agenda-register" disabled>{a.registrationStatus === "closed" || a.registrationStatus === "full" ? "Inscrições encerradas" : "Inscreva-se"}</button>}
                                   </div>
                                 </div>
                               </>

@@ -127,7 +127,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/vDC8LMxd45UBkJqV7",
     "onlineUrl": "https://meet.google.com/zgz-motj-bar",
     "start": "19:30",
@@ -145,7 +145,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Atividade destinada a iniciantes e interessados em desenvolvimento de jogos, sem exigência de conhecimento prévio."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/J8BbxKKZanb6PNrXA",
     "start": "13:00",
     "capacity": 30,
@@ -179,7 +179,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Conhecimentos básicos em lógica de programação e Python, incluindo estruturas condicionais, laços de repetição e funções simples."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/cqNfxjiGQfii2BjQ8",
     "start": "13:00",
     "capacity": 30,
@@ -197,7 +197,7 @@ export const activities: Activity[] = [
     "requirements": [
       "São necessários apenas conhecimentos básicos de informática e familiaridade com o uso cotidiano do computador."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/6zfxeRuSGv3qx5Db9",
     "start": "13:00",
     "capacity": 20,
@@ -214,7 +214,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/WrSY8bjHdyVj4Cwo8",
     "start": "13:00",
     "capacity": 15,
@@ -231,7 +231,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/nA26oDZ34o2TLcL57",
     "start": "13:00",
     "capacity": 30,
@@ -249,7 +249,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/W5Encex3PbXMNz9N7",
     "mode": "Presencial",
     "start": "13:30"
@@ -265,7 +265,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/znUXSJ36U5Ejm1HL9",
     "start": "13:00",
     "capacity": 30,
@@ -282,7 +282,7 @@ export const activities: Activity[] = [
     "requirements": [
       "não"
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/tHazG5a34BtcZMrD6",
     "onlineUrl": "https://meet.google.com/qtj-gjbg-pao",
     "start": "19:30",
@@ -300,7 +300,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "open",
+    "registrationStatus": "closed",
     "registrationUrl": "https://forms.gle/nUNMxjPwkrkSie9J9",
     "onlineUrl": "https://meet.google.com/tii-zouj-eab",
     "start": "19:30",
