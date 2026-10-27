@@ -130,7 +130,7 @@ function App() {
   const activities = useMemo(() => initialActivities.filter(activity => isActivityPublished(activity, publicationNow)).map(activity => {
     const status = registrationStatuses[activity.id];
     // A confirmed response can close or reopen a form; unknown responses never undo it.
-    const current = (status === "closed" || status === "open") && activity.id !== "desafio-programacao"
+    const current = (status === "closed" || status === "open") && activity.id !== "desafio-programacao" && !activity.registrationStatusLocked
       ? { ...activity, registrationStatus: status }
       : activity;
     return current;

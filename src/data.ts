@@ -32,6 +32,7 @@ export interface Activity {
   requirements: (string | { text: string; emphasize: string[] })[];
   capacity?: number | null | "limited";
   registrationStatus: "open" | "closed" | "full" | "none" | "soon" | "unknown";
+  registrationStatusLocked?: boolean;
   registrationUrl?: string;
   registrationDeadline?: string;
   registrationInstructions?: string;
@@ -128,6 +129,7 @@ export const activities: Activity[] = [
       "Nenhum."
     ],
     "registrationStatus": "closed",
+    "registrationStatusLocked": true,
     "registrationUrl": "https://forms.gle/vDC8LMxd45UBkJqV7",
     "onlineUrl": "https://meet.google.com/zgz-motj-bar",
     "start": "19:30",
@@ -179,7 +181,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Conhecimentos básicos em lógica de programação e Python, incluindo estruturas condicionais, laços de repetição e funções simples."
     ],
-    "registrationStatus": "closed",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/cqNfxjiGQfii2BjQ8",
     "start": "13:00",
     "capacity": 30,
@@ -249,7 +251,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "closed",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/W5Encex3PbXMNz9N7",
     "mode": "Presencial",
     "start": "13:30"
@@ -282,7 +284,7 @@ export const activities: Activity[] = [
     "requirements": [
       "não"
     ],
-    "registrationStatus": "closed",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/tHazG5a34BtcZMrD6",
     "onlineUrl": "https://meet.google.com/qtj-gjbg-pao",
     "start": "19:30",
@@ -300,7 +302,7 @@ export const activities: Activity[] = [
     "requirements": [
       "Nenhum."
     ],
-    "registrationStatus": "closed",
+    "registrationStatus": "open",
     "registrationUrl": "https://forms.gle/nUNMxjPwkrkSie9J9",
     "onlineUrl": "https://meet.google.com/tii-zouj-eab",
     "start": "19:30",

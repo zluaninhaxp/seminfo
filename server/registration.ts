@@ -4,7 +4,7 @@ export type RegistrationStatus = 'open' | 'soon' | 'closed' | 'unknown';
 
 // Check only the event's own links. The CSP retains its existing configuration.
 const checkedActivities = activities.filter(activity =>
-  activity.id !== 'desafio-programacao' && activity.registrationUrl,
+  activity.id !== 'desafio-programacao' && !activity.registrationStatusLocked && activity.registrationUrl,
 );
 
 export function responderUrl(value: string) {
